@@ -35,8 +35,8 @@ const SOCIALS = [
 ];
 
 const FooterLink = ({ to, href, children }) => {
-  const style = { fontSize:13, color:'var(--t2)', textDecoration:'none', transition:'color .13s', display:'block' };
-  const hover = e => e.currentTarget.style.color = 'var(--t1)';
+  const style = { fontFamily:"'JetBrains Mono',monospace", fontSize:12.5, color:'var(--t2)', textDecoration:'none', transition:'color .13s', display:'block', letterSpacing:'.02em' };
+  const hover = e => e.currentTarget.style.color = 'var(--volt)';
   const out   = e => e.currentTarget.style.color = 'var(--t2)';
   if (href) return <a href={href} target="_blank" rel="noopener noreferrer" style={style} onMouseEnter={hover} onMouseLeave={out}>{children}</a>;
   return <Link to={to} style={style} onMouseEnter={hover} onMouseLeave={out}>{children}</Link>;
@@ -58,8 +58,8 @@ const Footer = ({ variant = 'app' }) => {
           {/* Brand column */}
           <div style={{ gridColumn:'span 1' }}>
             <LogoFull height={32} linkTo={isLanding ? '/' : null}/>
-            <p style={{ fontSize:13, color:'var(--t2)', marginTop:12, lineHeight:1.65, maxWidth:240 }}>
-              India's all-in-one fitness platform — workouts, nutrition, certified trainers and progress tracking.
+            <p style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, color:'var(--t2)', marginTop:14, lineHeight:1.7, maxWidth:260 }}>
+              Data-driven training, engineered like software. Personalised protocols, certified coaches and real-time analytics.
             </p>
             {/* Social icons */}
             <div style={{ display:'flex', gap:8, marginTop:16 }}>
@@ -76,7 +76,7 @@ const Footer = ({ variant = 'app' }) => {
 
           {/* Platform links */}
           <div>
-            <div style={{ fontSize:11, fontWeight:700, color:'var(--t3)', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:12 }}>Platform</div>
+            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, fontWeight:500, color:'var(--t3)', textTransform:'uppercase', letterSpacing:'.16em', marginBottom:14 }}>System</div>
             <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
               <FooterLink to="/user/workouts">Workout Library</FooterLink>
               <FooterLink to="/user/trainers">Find a Trainer</FooterLink>
@@ -88,7 +88,7 @@ const Footer = ({ variant = 'app' }) => {
 
           {/* Company */}
           <div>
-            <div style={{ fontSize:11, fontWeight:700, color:'var(--t3)', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:12 }}>Company</div>
+            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, fontWeight:500, color:'var(--t3)', textTransform:'uppercase', letterSpacing:'.16em', marginBottom:14 }}>Company</div>
             <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
               <FooterLink to="/info/about">About Us</FooterLink>
               <FooterLink to="/info/blog">Blog & Tips</FooterLink>
@@ -100,7 +100,7 @@ const Footer = ({ variant = 'app' }) => {
 
           {/* Support */}
           <div>
-            <div style={{ fontSize:11, fontWeight:700, color:'var(--t3)', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:12 }}>Support</div>
+            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, fontWeight:500, color:'var(--t3)', textTransform:'uppercase', letterSpacing:'.16em', marginBottom:14 }}>Support</div>
             <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
               <FooterLink to="/info/help">Help Centre</FooterLink>
               <FooterLink to="/info/privacy">Privacy Policy</FooterLink>
@@ -112,7 +112,7 @@ const Footer = ({ variant = 'app' }) => {
 
           {/* Login links */}
           <div>
-            <div style={{ fontSize:11, fontWeight:700, color:'var(--t3)', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:12 }}>Login</div>
+            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, fontWeight:500, color:'var(--t3)', textTransform:'uppercase', letterSpacing:'.16em', marginBottom:14 }}>Access</div>
             <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
               <FooterLink to="/login">User Login</FooterLink>
               <FooterLink to="/trainer/login">Trainer Login</FooterLink>
@@ -125,12 +125,12 @@ const Footer = ({ variant = 'app' }) => {
 
         {/* Bottom bar */}
         <div style={{ borderTop:'1px solid var(--border)', paddingTop:20, display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:12 }}>
-          <span style={{ fontSize:12, color:'var(--t3)' }}>
-            © {new Date().getFullYear()} Mpower Fitness Pvt. Ltd. All rights reserved. Made with 💪 in India.
+          <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:11, letterSpacing:'.06em', textTransform:'uppercase', color:'var(--t3)' }}>
+            © {new Date().getFullYear()} MPower Fitness
           </span>
           <div style={{ display:'flex', gap:4, flexWrap:'wrap' }}>
             {['UPI Payments','SSL Secured','GDPR Compliant'].map(badge => (
-              <span key={badge} style={{ fontSize:11, color:'var(--t3)', padding:'2px 8px', background:'var(--s2)', border:'1px solid var(--border)', borderRadius:'var(--r-sm)' }}>{badge}</span>
+              <span key={badge} style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, letterSpacing:'.08em', textTransform:'uppercase', color:'var(--t3)', padding:'3px 9px', background:'var(--s2)', border:'1px solid var(--border)' }}>{badge}</span>
             ))}
           </div>
         </div>

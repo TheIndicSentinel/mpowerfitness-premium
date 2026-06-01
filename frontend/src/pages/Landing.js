@@ -6,23 +6,216 @@ import useAuthStore from '../store/authStore';
 
 const ConsultationModal = lazy(() => import('../components/shared/ConsultationModal'));
 
-/* ── helpers ─────────────────────────────────────────────────────── */
-const L = 'rgba(120,160,230,.14)';   // --line alias for inline use
-const BLUE = '#2e6bff';
-const CYAN = '#43d0ff';
+/* ── Blueprint tokens (mirror of globals.css for inline use) ──── */
+const VOLT    = '#c3dc6a';
+const AMBER   = '#e8743f';
+const LINE    = 'rgba(212,249,94,.16)';
+const LINE2   = 'rgba(255,255,255,.07)';
+const LINE3   = 'rgba(255,255,255,.12)';
+const BG      = '#08090b';
+const CHAR    = '#0e0f12';
+const S1      = '#16181d';
 
-const Tick = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-    <path d="M20 6 9 17l-5-5"/>
-  </svg>
+/* ── Blueprint grid backdrop ──────────────────────────────────── */
+const GridBg = ({ style = {} }) => (
+  <div style={{
+    position: 'absolute', inset: 0, pointerEvents: 'none',
+    backgroundImage: `linear-gradient(${LINE2} 1px,transparent 1px),linear-gradient(90deg,${LINE2} 1px,transparent 1px)`,
+    backgroundSize: '52px 52px',
+    ...style,
+  }}/>
 );
 
-/* ── Landing ─────────────────────────────────────────────────────── */
+/* ── Crosshair marker ─────────────────────────────────────────── */
+const Crosshair = ({ style = {} }) => (
+  <div style={{ position: 'absolute', width: 16, height: 16, pointerEvents: 'none', ...style }}>
+    <div style={{ position:'absolute', left:'50%', top:0, width:1, height:'100%', background:VOLT, opacity:.4, transform:'translateX(-.5px)' }}/>
+    <div style={{ position:'absolute', top:'50%', left:0, height:1, width:'100%', background:VOLT, opacity:.4, transform:'translateY(-.5px)' }}/>
+  </div>
+);
+
+/* ── Angular clip-path button (inline, for sections not using .btn) */
+const BtnVolt = ({ children, onClick, href, style = {} }) => {
+  const base = {
+    display: 'inline-flex', alignItems: 'center', gap: 10,
+    fontFamily: "'Archivo',sans-serif", fontWeight: 800, fontSize: 13.5,
+    letterSpacing: '.05em', textTransform: 'uppercase',
+    padding: '15px 28px', border: '1.5px solid transparent',
+    cursor: 'pointer', background: VOLT, color: '#14160c',
+    clipPath: 'polygon(0 0,100% 0,100% 100%,11px 100%,0 calc(100% - 11px))',
+    boxShadow: `0 10px 26px -16px rgba(195,220,106,.45)`,
+    transition: '.2s', textDecoration: 'none', ...style,
+  };
+  if (href) return <a href={href} style={base}>{children}</a>;
+  return <button onClick={onClick} style={base}>{children}</button>;
+};
+const BtnGhost = ({ children, onClick, href, style = {} }) => {
+  const [hov, setHov] = useState(false);
+  const base = {
+    display: 'inline-flex', alignItems: 'center', gap: 10,
+    fontFamily: "'Archivo',sans-serif", fontWeight: 800, fontSize: 13.5,
+    letterSpacing: '.05em', textTransform: 'uppercase',
+    padding: '15px 28px', border: `1.5px solid ${hov ? VOLT : LINE3}`,
+    cursor: 'pointer', background: hov ? `rgba(195,220,106,.12)` : 'rgba(255,255,255,.015)',
+    color: hov ? VOLT : '#f3f4ef',
+    clipPath: 'polygon(0 0,100% 0,100% 100%,11px 100%,0 calc(100% - 11px))',
+    transition: '.2s', textDecoration: 'none', ...style,
+  };
+  if (href) return <a href={href} style={base} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}>{children}</a>;
+  return <button onClick={onClick} style={base} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}>{children}</button>;
+};
+
+/* ── Mono eyebrow label ───────────────────────────────────────── */
+const Eyebrow = ({ children }) => (
+  <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize: 11.5, fontWeight: 500, letterSpacing: '.28em', textTransform: 'uppercase', color: VOLT }}>
+    {children}
+  </span>
+);
+
+/* ── Hero rotating gallery ────────────────────────────────────── */
+const GALLERY_LABELS = [
+  'Brand image 1 — raw strength / iron',
+  'Brand image 2 — conditioning / sweat',
+  'Brand image 3 — focus / discipline',
+  'Brand image 4 — transformation / win',
+];
+const WORDS = ['Discipline', 'Strength', 'Conditioning', 'Results'];
+/* Placeholder shown behind the real image while it loads / if missing */
+const SlidePlaceholder = ({ label }) => (
+  <>
+    <div style={{
+      position:'absolute', inset:0,
+      background:'linear-gradient(160deg,#131419,#0d0e12)',
+      backgroundImage:`linear-gradient(rgba(195,220,106,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(195,220,106,.035) 1px,transparent 1px)`,
+      backgroundSize:'44px 44px',
+    }}/>
+    <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:14, zIndex:1 }}>
+      <div style={{ border:`1px solid rgba(195,220,106,.22)`, width:56, height:56, display:'grid', placeItems:'center' }}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={VOLT} strokeWidth="1.2" opacity=".45">
+          <rect x="3" y="3" width="18" height="18"/>
+          <circle cx="8.5" cy="8.5" r="1.5" fill={VOLT} stroke="none" opacity=".6"/>
+          <polyline points="21,15 16,10 5,21" opacity=".7"/>
+        </svg>
+      </div>
+      <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:9, letterSpacing:'.2em', textTransform:'uppercase', color:'rgba(195,220,106,.38)', textAlign:'center', maxWidth:160, lineHeight:1.5 }}>{label}</span>
+    </div>
+  </>
+);
+
+/*
+ * GallerySlide — placeholder always underneath, real image fades in on load.
+ * imgFile is a filename from manifest.json (e.g. "strengthncondition.jpg").
+ * If imgFile is null/undefined the placeholder stays visible.
+ */
+const GallerySlide = ({ imgFile, label, active }) => {
+  const [loaded, setLoaded] = useState(false);
+
+  return (
+    <div style={{ position:'absolute', inset:0, opacity: active ? 1 : 0, transition:'opacity .9s ease' }}>
+      <SlidePlaceholder label={label}/>
+      {imgFile && (
+        <img
+          src={`/hero/${imgFile}`}
+          alt=""
+          style={{
+            position:'absolute', top:0, left:0, width:'100%', height:'100%',
+            objectFit:'cover', display:'block', zIndex:2,
+            opacity: loaded ? 1 : 0,
+            transition:'opacity .5s ease',
+          }}
+          onLoad={() => setLoaded(true)}
+        />
+      )}
+    </div>
+  );
+};
+
+const HeroRight = () => {
+  const [slide, setSlide] = useState(0);
+  const [wordVis, setWordVis] = useState(true);
+  const [word, setWord] = useState(WORDS[0]);
+  /* heroImages loaded from /hero/manifest.json — any filename, any count */
+  const [heroImages, setHeroImages] = useState([]);
+
+  useEffect(() => {
+    /* Fetch manifest; silently shows placeholders if manifest missing */
+    fetch('/hero/manifest.json')
+      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+      .then(data => setHeroImages(Array.isArray(data) ? data : (data.images || [])))
+      .catch(() => {});
+
+    const t = setInterval(() => {
+      setSlide(i => (i + 1) % 4);
+      setWordVis(false);
+      setTimeout(() => {
+        setWord(w => WORDS[(WORDS.indexOf(w) + 1) % WORDS.length]);
+        setWordVis(true);
+      }, 220);
+    }, 2000);
+    return () => clearInterval(t);
+  }, []);
+
+  /* Cycle images across the 4 slots (e.g. 1 image repeats on all 4) */
+  const imgForSlot = (i) => heroImages.length > 0 ? heroImages[i % heroImages.length] : null;
+
+  return (
+    <div style={{ position:'relative', borderLeft:`1px solid ${LINE2}`, minHeight:580 }} className="hero-right-bp">
+
+      {/* Gallery slides — fills full panel, placeholder underneath, real img fades in */}
+      <div style={{ position:'absolute', inset:0, overflow:'hidden' }}>
+        {GALLERY_LABELS.map((label, i) => (
+          <GallerySlide key={i} imgFile={imgForSlot(i)} label={label} active={i === slide}/>
+        ))}
+      </div>
+
+      {/* Scrim overlays */}
+      <div style={{ position:'absolute', inset:0, zIndex:2, pointerEvents:'none', background:`linear-gradient(180deg,rgba(8,9,11,.35) 0%,transparent 30%,transparent 60%,rgba(8,9,11,.55) 100%),linear-gradient(90deg,rgba(8,9,11,.5),transparent 22%)` }}/>
+
+      {/* Corner brackets */}
+      <div style={{ position:'absolute', top:20, left:20, width:28, height:28, border:`2px solid ${VOLT}`, borderRight:0, borderBottom:0, zIndex:4 }}/>
+      <div style={{ position:'absolute', bottom:20, right:20, width:28, height:28, border:`2px solid ${VOLT}`, borderLeft:0, borderTop:0, zIndex:4 }}/>
+
+      {/* Progress dots (top-left, inside bracket) */}
+      <div style={{ position:'absolute', top:28, left:24, zIndex:5, display:'flex', gap:7 }}>
+        {[0,1,2,3].map(i => (
+          <div key={i} style={{ width:22, height:3, background: i === slide ? VOLT : 'rgba(255,255,255,.22)', transition:'background .3s' }}/>
+        ))}
+      </div>
+
+      {/* Float card (top-right, inside bracket) */}
+      <div style={{ position:'absolute', top:28, right:24, zIndex:5, background:'rgba(14,15,18,.72)', backdropFilter:'blur(14px)', border:`1px solid ${LINE}`, padding:'16px 18px', minWidth:168, boxShadow:'0 20px 50px -20px rgba(0,0,0,.7)' }}>
+        <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:9, letterSpacing:'.16em', textTransform:'uppercase', color:'#9b9da4' }}>Output index</div>
+        <div style={{ fontFamily:"'Anton',sans-serif", fontSize:30, color:VOLT, marginTop:5, lineHeight:1 }}>+35%</div>
+        <div style={{ height:5, background:'rgba(255,255,255,.08)', marginTop:12, position:'relative', overflow:'hidden' }}>
+          <div style={{ position:'absolute', inset:'0 35% 0 0', background:`linear-gradient(90deg,#9bb53f,${VOLT})` }}/>
+        </div>
+      </div>
+
+      {/* Attitude word (bottom-left, inside bracket) */}
+      <div style={{ position:'absolute', left:24, bottom:74, zIndex:5 }}>
+        <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, letterSpacing:'.2em', textTransform:'uppercase', color:VOLT, marginBottom:6 }}>// This is</div>
+        <div style={{
+          fontFamily:"'Anton',sans-serif", textTransform:'uppercase',
+          fontSize:'clamp(32px,3.8vw,50px)', lineHeight:.88, color:'#fff', letterSpacing:'.01em',
+          fontStyle:'italic', transform:'skewX(-7deg)', transformOrigin:'left',
+          opacity: wordVis ? 1 : 0, transition:'opacity .25s ease',
+        }}>{word}</div>
+      </div>
+
+      {/* Readout (bottom bar) */}
+      <div style={{ position:'absolute', left:24, bottom:24, zIndex:5, fontFamily:"'JetBrains Mono',monospace", fontSize:10, letterSpacing:'.12em', textTransform:'uppercase', color:VOLT, background:'rgba(8,9,11,.66)', backdropFilter:'blur(6px)', border:`1px solid ${LINE}`, padding:'7px 11px' }}>
+        STATUS: <span style={{ color:'#9b9da4' }}>SYSTEM ONLINE</span>
+      </div>
+    </div>
+  );
+};
+
+/* ── Landing ──────────────────────────────────────────────────── */
 const Landing = () => {
-  const heroRef = useRef(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showConsult, setShowConsult] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [email, setEmail] = useState('');
   const { user: authUser, isAuthenticated } = useAuthStore();
   const [browserConsultDone, setBrowserConsultDone] = useState(() => {
     try { return localStorage.getItem('mpower-consultation-done') === '1'; } catch { return false; }
@@ -38,73 +231,65 @@ const Landing = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const plans = [
-    {
-      name: 'Starter', price: '₹499', period: '/mo', tag: null,
-      sub: 'Your assessment + a starter plan.',
-      features: ['Personalised assessment', 'Starter workout plan', 'Progress tracking', 'Community access'],
-      cta: 'Get started', primary: false,
-    },
-    {
-      name: 'Pro', price: '₹1,499', period: '/mo', tag: 'Most popular',
-      sub: 'A dedicated trainer + full personalisation.',
-      features: ['Everything in Starter', '2 trainer sessions / month', 'Personalised nutrition plan', 'Unlimited chat support', 'Advanced analytics'],
-      cta: 'Start free trial', primary: true,
-    },
-    {
-      name: 'Elite', price: '₹2,999', period: '/mo', tag: null,
-      sub: '1-on-1 coaching + condition specialists.',
-      features: ['Everything in Pro', 'Weekly 1-on-1 video calls', 'Daily check-ins', 'Body composition analysis', 'Condition specialist access'],
-      cta: 'Choose Elite', primary: false,
-    },
-  ];
+  const wrap = { maxWidth: 1280, margin: '0 auto', padding: '0 32px' };
 
+  /* ── Programs ──────────────────────────────── */
   const programs = [
-    { ic: '🔥', name: 'Weight Loss', desc: 'Sustainable fat-loss built around food you actually enjoy and a schedule you can keep.', tag: 'Most popular' },
-    { ic: '💪', name: 'Strength & Muscle', desc: 'Progressive overload programming to build real, visible strength.', tag: 'Explore' },
-    { ic: '🌸', name: 'PCOD & Hormonal Health', desc: 'Training and nutrition designed with specialists for hormonal balance.', tag: 'Explore' },
-    { ic: '🩺', name: 'Diabetes & Thyroid', desc: 'Safe, condition-aware coaching that works alongside your medical care.', tag: 'Explore' },
-    { ic: '🌱', name: 'Beginner Kickstart', desc: 'Brand new to fitness? Start with confidence and zero overwhelm.', tag: 'Explore' },
-    { ic: '🥗', name: 'Nutrition Coaching', desc: 'Smart, flexible meal guidance — no crash diets, no banned foods.', tag: 'Explore' },
+    { code:'P-01', ico:'🔥', name:'Fat-Loss Engine', desc:'High-output, sustainable fat loss built around food you\'ll actually eat. The protocol recalibrates every week against your real numbers.', stat:'-21 lbs', statLbl:'Avg / 12 weeks', tag:'Most deployed →', hot:true },
+    { code:'P-02', ico:'💪', name:'Strength Matrix', desc:'Progressive-overload programming with auto-regulated load — tracked rep by rep to build real, measurable strength.', stat:'+35%', statLbl:'Avg squat max', tag:'Deploy →', hot:false },
+    { code:'P-03', ico:'🌸', name:'Hormonal / PCOD', desc:'Condition-aware training and nutrition built with specialists for hormonal balance and sustainable results.', stat:'1:1', statLbl:'Specialist-led', tag:'Deploy →', hot:false },
+    { code:'P-04', ico:'🩺', name:'Metabolic Health', desc:'Safe, calibrated coaching for diabetes and thyroid that runs alongside your medical care.', stat:'24/7', statLbl:'Coach support', tag:'Deploy →', hot:false },
+    { code:'P-05', ico:'🌱', name:'Zero-to-One', desc:'Brand new to training? A beginner on-ramp engineered to remove all overwhelm and build the habit first.', stat:'0→1', statLbl:'Beginner path', tag:'Deploy →', hot:false },
+    { code:'P-06', ico:'🥗', name:'Nutrition Engine', desc:'Smart, flexible macro guidance — no crash diets, no banned foods. Built to fit the way you actually live.', stat:'92%', statLbl:'Adherence', tag:'Deploy →', hot:false },
   ];
 
-  const testimonials = [
-    { q: '"My trainer actually understood my PCOD. For the first time a plan worked with my body, not against it."', name: 'Priya M.', sub: 'Lost 8kg · Bengaluru', init: 'P', bg: BLUE },
-    { q: '"I travel constantly. Having my whole plan adapt to a hotel room kept me consistent for the first time ever."', name: 'Arjun K.', sub: 'Down 2 sizes · Mumbai', init: 'A', bg: CYAN, dark: true },
-    { q: '"Started as a complete beginner. The Kickstart program made it feel doable from day one."', name: 'Ritika S.', sub: '6-month streak · Pune', init: 'R', bg: '#1b3f8f' },
+  /* ── Reviews ───────────────────────────────── */
+  const reviews = [
+    { init:'P', bg:VOLT, q:'"My PCOD protocol finally <b>worked with my body.</b>"', name:'Priya M.' },
+    { init:'A', bg:AMBER, q:'"Adapts to a hotel room. <b>Consistent for the first time.</b>"', name:'Arjun K.' },
+    { init:'R', bg:VOLT, q:'"Went from zero to a <b>6-month streak.</b>"', name:'Ritika S.' },
+    { init:'S', bg:AMBER, q:'"Type-2 diabetic. <b>Levels stable, strength up.</b>"', name:'Sanjay R.' },
+    { init:'N', bg:VOLT, q:'"The analytics keep me <b>brutally honest.</b>"', name:'Neha T.' },
   ];
 
-  const navStyle = {
-    position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
-    backdropFilter: 'blur(14px)',
-    background: scrolled ? 'rgba(8,17,33,.92)' : 'rgba(8,17,33,.72)',
-    borderBottom: `1px solid ${L}`,
-    transition: 'background .3s',
-  };
-
-  const wrap = { maxWidth: 1200, margin: '0 auto', padding: '0 28px' };
+  const navBg = scrolled ? 'rgba(8,9,11,.92)' : 'rgba(8,9,11,.75)';
 
   return (
-    <div style={{ background: 'var(--black)', minHeight: '100vh', overflowX: 'hidden' }}>
+    <div style={{ background: BG, minHeight: '100vh', overflowX: 'hidden' }}>
 
       {/* ── NAV ──────────────────────────────────────────────────── */}
-      <header style={navStyle}>
-        <nav style={{ ...wrap, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 74 }}>
-          <LogoFull height={46} />
+      <header style={{ position:'sticky', top:0, zIndex:60, background:navBg, backdropFilter:'blur(18px)', borderBottom:`1px solid ${LINE2}`, transition:'background .3s' }}>
+        <nav style={{ ...wrap, display:'flex', alignItems:'center', justifyContent:'space-between', height:76 }}>
 
-          <div className="landing-nav-links" style={{ display: 'flex', gap: 34, fontSize: 15, fontWeight: 600, color: 'var(--t2)' }}>
-            <a href="#how" className="landing-nav-link">How it works</a>
-            <a href="#programs" className="landing-nav-link">Programs</a>
-            <a href="#pricing" className="landing-nav-link">Pricing</a>
-            <Link to="/trainer/login" className="landing-nav-link">Trainers</Link>
+          {/* Logo mark */}
+          <div style={{ display:'flex', alignItems:'center', gap:13 }}>
+            <div style={{ width:40, height:40, display:'grid', placeItems:'center', border:`1.5px solid ${VOLT}`, fontFamily:"'Anton',sans-serif", fontSize:21, color:VOLT, clipPath:'polygon(0 0,100% 0,100% 100%,8px 100%,0 calc(100% - 8px))' }}>M</div>
+            <div>
+              <b style={{ display:'block', fontFamily:"'Archivo',sans-serif", fontWeight:900, fontSize:16, letterSpacing:'.02em', lineHeight:1, textTransform:'uppercase', color:'#f3f4ef' }}>MPower Fitness</b>
+              <span style={{ display:'block', fontFamily:"'JetBrains Mono',monospace", fontSize:8, letterSpacing:'.22em', color:'#5f6168', marginTop:3 }}>PERFORMANCE SYSTEMS</span>
+            </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-            <Link to="/login" style={{ fontWeight: 600, fontSize: 15, color: 'var(--t2)', textDecoration: 'none' }} className="landing-nav-links">Login</Link>
-            <button onClick={() => setShowConsult(true)} className="btn btn-primary" style={{ padding: '11px 20px', fontSize: 14 }}>Free Consultation</button>
-            {/* Hamburger */}
+          {/* Desktop links */}
+          <div className="landing-nav-links" style={{ display:'flex', gap:34, fontFamily:"'JetBrains Mono',monospace", fontWeight:500, fontSize:13, letterSpacing:'.04em', color:'#9b9da4', textTransform:'uppercase' }}>
+            <a href="#method" style={{ color:'inherit', textDecoration:'none', transition:'color .2s' }} onMouseEnter={e=>e.target.style.color=VOLT} onMouseLeave={e=>e.target.style.color='#9b9da4'}>Method</a>
+            <a href="#programs" style={{ color:'inherit', textDecoration:'none', transition:'color .2s' }} onMouseEnter={e=>e.target.style.color=VOLT} onMouseLeave={e=>e.target.style.color='#9b9da4'}>Programs</a>
+            <a href="#proof" style={{ color:'inherit', textDecoration:'none', transition:'color .2s' }} onMouseEnter={e=>e.target.style.color=VOLT} onMouseLeave={e=>e.target.style.color='#9b9da4'}>Proof</a>
+            <a href="#pricing" style={{ color:'inherit', textDecoration:'none', transition:'color .2s' }} onMouseEnter={e=>e.target.style.color=VOLT} onMouseLeave={e=>e.target.style.color='#9b9da4'}>Pricing</a>
+          </div>
+
+          <div style={{ display:'flex', alignItems:'center', gap:20 }}>
+            <Link to="/login" style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:13, letterSpacing:'.04em', color:'#9b9da4', textTransform:'uppercase', textDecoration:'none', transition:'color .2s' }}
+              className="landing-nav-links"
+              onMouseEnter={e=>e.currentTarget.style.color='#f3f4ef'} onMouseLeave={e=>e.currentTarget.style.color='#9b9da4'}>
+              Log in
+            </Link>
+            <button onClick={() => setShowConsult(true)} className="btn btn-primary" style={{ padding:'11px 20px', fontSize:12 }}>
+              Free Consultation
+            </button>
+            {/* Mobile hamburger */}
             <button className="landing-hamburger" onClick={() => setMobileOpen(o => !o)} aria-label="Menu"
-              style={{ display: 'none', background: 'none', border: `1px solid ${L}`, borderRadius: 8, cursor: 'pointer', color: 'var(--t2)', padding: '6px 8px' }}>
+              style={{ display:'none', background:'none', border:`1px solid ${LINE3}`, cursor:'pointer', color:'#9b9da4', padding:'6px 8px' }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                 <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
               </svg>
@@ -113,134 +298,115 @@ const Landing = () => {
         </nav>
 
         {mobileOpen && (
-          <div style={{ background: 'rgba(8,17,33,.97)', borderTop: `1px solid ${L}`, padding: '12px 28px 20px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {[['#how','How it works'],['#programs','Programs'],['#pricing','Pricing']].map(([h,l]) => (
-              <a key={h} href={h} className="landing-mobile-link" onClick={() => setMobileOpen(false)}>{l}</a>
+          <div style={{ background:'rgba(8,9,11,.97)', borderTop:`1px solid ${LINE2}`, padding:'14px 32px 22px', display:'flex', flexDirection:'column', gap:2 }}>
+            {[['#method','Method'],['#programs','Programs'],['#proof','Proof'],['#pricing','Pricing']].map(([h,l]) => (
+              <a key={h} href={h} className="landing-mobile-link" onClick={() => setMobileOpen(false)} style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:13, letterSpacing:'.08em', textTransform:'uppercase' }}>{l}</a>
             ))}
-            <Link to="/login" className="landing-mobile-link" onClick={() => setMobileOpen(false)}>Login</Link>
-            {true && (
-              <button className="btn btn-primary btn-full" style={{ marginTop: 8 }}
-                onClick={() => { setMobileOpen(false); setShowConsult(true); }}>Free Consultation</button>
-            )}
+            <Link to="/login" className="landing-mobile-link" onClick={() => setMobileOpen(false)} style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:13, letterSpacing:'.08em', textTransform:'uppercase' }}>Log in</Link>
+            <button className="btn btn-primary btn-full" style={{ marginTop:12, clipPath:'none' }}
+              onClick={() => { setMobileOpen(false); setShowConsult(true); }}>Free Consultation →</button>
           </div>
         )}
       </header>
 
       {/* ── HERO ─────────────────────────────────────────────────── */}
-      <section ref={heroRef} style={{ position: 'relative', padding: 'clamp(92px,12vw,120px) 0 70px', overflow: 'hidden' }}>
-        {/* grid overlay */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: `linear-gradient(${L} 1px,transparent 1px),linear-gradient(90deg,${L} 1px,transparent 1px)`,
-          backgroundSize: '64px 64px',
-          WebkitMaskImage: 'radial-gradient(120% 90% at 70% 10%,#000 30%,transparent 75%)',
-          maskImage: 'radial-gradient(120% 90% at 70% 10%,#000 30%,transparent 75%)',
-          opacity: .6,
-        }}/>
-        {/* orbs */}
-        <div style={{ position:'absolute', width:520, height:520, borderRadius:'50%', background:'radial-gradient(circle,#2e6bff,transparent 70%)', filter:'blur(70px)', opacity:.55, top:-160, right:-120, pointerEvents:'none' }}/>
-        <div style={{ position:'absolute', width:380, height:380, borderRadius:'50%', background:`radial-gradient(circle,${CYAN},transparent 70%)`, filter:'blur(70px)', opacity:.3, bottom:-180, left:-100, pointerEvents:'none' }}/>
+      <section style={{ position:'relative', overflow:'hidden', borderBottom:`1px solid ${LINE2}` }}>
+        <GridBg style={{ WebkitMaskImage:'radial-gradient(120% 100% at 28% 18%,#000 32%,transparent 76%)', maskImage:'radial-gradient(120% 100% at 28% 18%,#000 32%,transparent 76%)', opacity:.85 }}/>
+        {/* Haze */}
+        <div style={{ position:'absolute', width:680, height:680, borderRadius:'50%', background:`radial-gradient(circle,rgba(195,220,106,.1),transparent 62%)`, top:-220, left:-120, pointerEvents:'none' }}/>
+        <Crosshair style={{ top:120, left:'6%' }}/>
+        <Crosshair style={{ bottom:90, left:'40%' }}/>
 
-        <div style={{ ...wrap, position: 'relative', zIndex: 2, display: 'grid', gridTemplateColumns: '1.15fr .85fr', gap: 50, alignItems: 'center' }} className="hero-inner">
-          <div>
-            <span style={{ display:'inline-flex', alignItems:'center', gap:9, padding:'8px 15px', border:`1px solid ${L}`, borderRadius:999, background:'rgba(46,107,255,.08)', fontSize:12.5, fontWeight:700, letterSpacing:'.06em', color:'var(--orange)', textTransform:'uppercase' }}>
-              <span style={{ width:7, height:7, borderRadius:'50%', background:CYAN, boxShadow:`0 0 10px ${CYAN}`, flexShrink:0 }}/>
-              India's most complete fitness platform
-            </span>
+        <div style={{ ...wrap, position:'relative', zIndex:3 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'1.04fr .96fr', alignItems:'stretch' }} className="hero-inner">
 
-            <h1 className="display" style={{ fontSize:'clamp(54px,7.4vw,104px)', margin:'26px 0 0' }}>
-              <span style={{ display:'block', color:'var(--t1)' }}>Train</span>
-              <span style={{ display:'block', background:`linear-gradient(120deg,var(--orange),${CYAN})`, WebkitBackgroundClip:'text', backgroundClip:'text', color:'transparent' }}>harder.</span>
-              <span style={{ display:'block', color:'transparent', WebkitTextStroke:'1.6px var(--orange)' }}>live</span>
-              <span style={{ display:'block', color:'transparent', WebkitTextStroke:'1.6px var(--orange)' }}>stronger.</span>
-            </h1>
+            {/* LEFT */}
+            <div style={{ padding:'64px 48px 64px 0', display:'flex', flexDirection:'column', justifyContent:'center' }} className="hero-left-bp">
+              {/* Kicker */}
+              <div style={{ display:'inline-flex', alignItems:'center', gap:11, fontFamily:"'JetBrains Mono',monospace", fontSize:11.5, letterSpacing:'.18em', textTransform:'uppercase', color:VOLT, border:`1px solid ${LINE}`, padding:'7px 14px', width:'max-content', background:'rgba(195,220,106,.06)' }}>
+                <span style={{ width:7, height:7, borderRadius:'50%', background:VOLT, animation:'pulse 2s ease infinite' }}/>
+                Precision digital coaching
+              </div>
 
-            <p style={{ margin:'26px 0 0', fontSize:18.5, lineHeight:1.55, color:'var(--t2)', maxWidth:440 }}>
-              Personalised workouts, certified trainers and smart nutrition — built around your body, your goals and your schedule.
-            </p>
+              {/* Hero headline */}
+              <h1 style={{ fontFamily:"'Anton',sans-serif", fontSize:'clamp(54px,7.4vw,108px)', margin:'24px 0 0', lineHeight:.94, textTransform:'uppercase', letterSpacing:'.005em', fontStyle:'italic', transform:'skewX(-7deg)', transformOrigin:'left' }}>
+                <span style={{ display:'block', color:'#f3f4ef', lineHeight:.94 }}>Engineer</span>
+                <span style={{ display:'block', color:'#f3f4ef', lineHeight:.94 }}>your</span>
+                <span style={{ display:'block', color:'transparent', WebkitTextStroke:'.35px rgba(243,244,239,.8)', lineHeight:.94, marginTop:6 }}>potential<span style={{ color:AMBER, WebkitTextStroke:0, marginLeft:'.05em' }}>.</span></span>
+              </h1>
 
-            <div style={{ display:'flex', gap:14, marginTop:34, flexWrap:'wrap' }}>
-              <button onClick={() => setShowConsult(true)} className="btn btn-primary" style={{ fontSize:15, padding:'15px 26px' }}>Free Consultation →</button>
-              <a href="#how" className="btn btn-ghost" style={{ fontSize:15, padding:'15px 26px' }}>See how it works</a>
-            </div>
+              {/* Hook */}
+              <p style={{ fontFamily:"'Archivo',sans-serif", fontWeight:600, fontStyle:'italic', fontSize:'clamp(17px,1.7vw,21px)', color:'#f3f4ef', marginTop:24, maxWidth:430, lineHeight:1.4 }}>
+                Stop training on guesswork.{' '}
+                <span style={{ color:VOLT, fontStyle:'normal', fontWeight:800 }}>Start building the body the data says you're capable of.</span>
+              </p>
 
-            <div style={{ display:'flex', alignItems:'center', gap:16, marginTop:34 }}>
-              <div style={{ display:'flex' }}>
-                {[['#2e6bff','A'],[`${CYAN};color:#06203a`,'S'],['#1b3f8f','R'],['#3b6','N'],['#16315a','+']].map(([bg, l], i) => (
-                  <div key={i} style={{ width:38, height:38, borderRadius:'50%', border:'2px solid var(--black)', marginLeft:i>0?-10:0, display:'grid', placeItems:'center', fontWeight:800, fontSize:13, color:'#fff', background:bg.includes(';')?bg.split(';')[0]:bg, zIndex:5-i, position:'relative', flexShrink:0 }}>{l}</div>
+              <p style={{ fontFamily:"'JetBrains Mono',monospace", marginTop:16, fontSize:13.5, lineHeight:1.7, color:'#9b9da4', maxWidth:420 }}>
+                Personalised protocols, certified coaches and real-time analytics — engineered around your numbers, your goals and your life.
+              </p>
+
+              <div style={{ display:'flex', gap:14, marginTop:34, flexWrap:'wrap' }}>
+                <BtnVolt onClick={() => setShowConsult(true)}>Free Consultation →</BtnVolt>
+                <BtnGhost href="#method">See the method</BtnGhost>
+              </div>
+
+              {/* Stats bar */}
+              <div style={{ display:'flex', marginTop:44, borderTop:`1px solid ${LINE2}` }}>
+                {[['30K+','Sessions logged'],['200+','Certified coaches'],['4.9★','Avg rating']].map(([v, l], i) => (
+                  <div key={l} style={{ flex:1, padding:'20px 20px 4px', borderRight: i < 2 ? `1px solid ${LINE2}` : 'none', paddingLeft: i > 0 ? 20 : 0 }}>
+                    <b style={{ fontFamily:"'Anton',sans-serif", fontSize:32, lineHeight:1, display:'block', textTransform:'uppercase' }}>
+                      {v.replace('+','')}{v.includes('+') && <em style={{ fontStyle:'normal', color:VOLT }}>+</em>}
+                      {v.includes('★') && <em style={{ fontStyle:'normal', color:VOLT }}>★</em>}
+                    </b>
+                    <small style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, letterSpacing:'.1em', textTransform:'uppercase', color:'#5f6168', display:'block', marginTop:8 }}>{l}</small>
+                  </div>
                 ))}
               </div>
-              <div><strong>5,000+</strong> <span style={{ color:'var(--t3)', fontSize:13.5, display:'block' }}>members transforming daily</span></div>
             </div>
-          </div>
 
-          {/* Progress panel */}
-          <div style={{ border:`1px solid ${L}`, borderRadius:24, background:'linear-gradient(180deg,rgba(22,49,90,.5),rgba(10,25,49,.4))', padding:30, backdropFilter:'blur(6px)' }} className="hero-panel-hide">
-            <div style={{ display:'flex', alignItems:'center', gap:22, marginBottom:24 }}>
-              <div style={{ position:'relative', width:96, height:96, flexShrink:0 }}>
-                <svg width="96" height="96" style={{ transform:'rotate(-90deg)' }}>
-                  <circle cx="48" cy="48" r="40" fill="none" stroke="rgba(255,255,255,.08)" strokeWidth="9"/>
-                  <circle cx="48" cy="48" r="40" fill="none" stroke="url(#g1)" strokeWidth="9" strokeLinecap="round" strokeDasharray="251" strokeDashoffset="55"/>
-                  <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor={BLUE}/><stop offset="1" stopColor={CYAN}/></linearGradient></defs>
-                </svg>
-                <div style={{ position:'absolute', inset:0, display:'grid', placeItems:'center', textAlign:'center' }}>
-                  <div><b className="display" style={{ fontSize:24 }}>78%</b><div style={{ fontSize:9, letterSpacing:'.12em', color:'var(--t3)', textTransform:'uppercase' }}>goal</div></div>
-                </div>
-              </div>
-              <div>
-                <b style={{ fontSize:17, fontWeight:800 }}>Your weekly progress</b>
-                <p style={{ color:'var(--t2)', fontSize:13.5, marginTop:3, lineHeight:1.4 }}>On track to hit your weight-loss target 3 weeks early.</p>
-              </div>
-            </div>
-            {[['Workouts','5 / 6',83],['Nutrition','92%',92],['Sleep & recovery','71%',71]].map(([l,v,p]) => (
-              <div key={l} style={{ display:'flex', flexDirection:'column', gap:7, marginBottom:14 }}>
-                <div style={{ display:'flex', justifyContent:'space-between', fontSize:13, fontWeight:600 }}>
-                  <span>{l}</span><span style={{ color:'var(--orange)', fontWeight:800 }}>{v}</span>
-                </div>
-                <div style={{ height:8, borderRadius:99, background:'rgba(255,255,255,.06)', overflow:'hidden' }}>
-                  <div style={{ height:'100%', borderRadius:99, width:`${p}%`, background:`linear-gradient(90deg,${BLUE},${CYAN})` }}/>
-                </div>
-              </div>
-            ))}
+            {/* RIGHT — rotating image gallery */}
+            <HeroRight/>
           </div>
         </div>
       </section>
 
-      {/* ── TRUST BAR ────────────────────────────────────────────── */}
-      <div style={{ borderTop:`1px solid ${L}`, borderBottom:`1px solid ${L}`, background:'rgba(7,15,32,.5)' }}>
-        <div style={{ ...wrap, display:'flex', flexWrap:'wrap', justifyContent:'space-between', gap:24, padding:'30px 28px' }}>
-          {[['30K+','Workouts completed'],['5K+','Active members'],['4.9★','Average rating'],['₹499','Plans start from']].map(([v,l]) => (
-            <div key={l}>
-              <div className="display" style={{ fontSize:34, lineHeight:1, color:'var(--t1)' }}>
-                {v.includes('★') ? <>{v.replace('★','')}<em style={{ fontStyle:'normal', color:'var(--orange)' }}>★</em></> :
-                 v.includes('+') ? <>{v.replace('+','')}<em style={{ fontStyle:'normal', color:'var(--orange)' }}>+</em></> :
-                 v.includes('₹') ? <><em style={{ fontStyle:'normal', color:'var(--orange)' }}>₹</em>{v.replace('₹','')}</> :
-                 v}
-              </div>
-              <div style={{ fontSize:12.5, letterSpacing:'.08em', textTransform:'uppercase', color:'var(--t3)', marginTop:7 }}>{l}</div>
-            </div>
+      {/* ── TICKER ───────────────────────────────────────────────── */}
+      <div style={{ marginTop:52, borderTop:`1px solid ${LINE2}`, borderBottom:`1px solid ${LINE2}`, background:CHAR, overflow:'hidden' }}>
+        <div style={{ display:'flex', gap:48, padding:'14px 0', whiteSpace:'nowrap', animation:'marquee 30s linear infinite', width:'max-content' }}>
+          {['Tailored protocols','Real-time analytics','Certified coaches','Macro tracking','Adaptive load','Condition-aware',
+            'Tailored protocols','Real-time analytics','Certified coaches','Macro tracking','Adaptive load','Condition-aware'].map((t, i) => (
+            <span key={i} style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, letterSpacing:'.1em', textTransform:'uppercase', color:'#9b9da4', display:'inline-flex', alignItems:'center', gap:48 }}>
+              {t}
+              <span style={{ display:'inline-block', width:5, height:5, background:AMBER, transform:'rotate(45deg)', flexShrink:0 }}/>
+            </span>
           ))}
         </div>
       </div>
 
-      {/* ── HOW IT WORKS ─────────────────────────────────────────── */}
-      <section id="how" style={{ padding:'96px 0' }}>
+      {/* ── METHOD ───────────────────────────────────────────────── */}
+      <section style={{ padding:'112px 0', position:'relative' }} id="method">
         <div style={wrap}>
-          <div style={{ maxWidth:640, marginBottom:54 }}>
-            <span className="eyebrow">How it works</span>
-            <h2 style={{ fontSize:'clamp(34px,4.4vw,54px)', marginTop:16, lineHeight:1.02, fontWeight:800 }}>Three steps to a stronger you.</h2>
-            <p style={{ marginTop:18, color:'var(--t2)', fontSize:17, lineHeight:1.6 }}>No guesswork, no generic plans. We build everything around a quick assessment — then adapt as you progress.</p>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', gap:30, marginBottom:62, flexWrap:'wrap' }}>
+            <div style={{ maxWidth:680 }}>
+              <Eyebrow>// The method</Eyebrow>
+              <h2 style={{ fontFamily:"'Anton',sans-serif", fontSize:'clamp(38px,5vw,74px)', marginTop:18, lineHeight:.88, textTransform:'uppercase', letterSpacing:'.005em', fontWeight:400 }}>
+                Three phases.{' '}
+                <span style={{ color:'transparent', WebkitTextStroke:`1.2px #9b9da4` }}>Zero guesswork.</span>
+              </h2>
+            </div>
+            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, letterSpacing:'.16em', color:'#5f6168', textTransform:'uppercase', paddingBottom:8 }}>FIG.01 — OPERATING SYSTEM</div>
           </div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:22 }}>
+
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', border:`1px solid ${LINE2}`, background:CHAR }} className="steps-grid">
             {[
-              ['01','Take the assessment','Two minutes on your goals, lifestyle, health history and any conditions like PCOD or thyroid.'],
-              ['02','Get matched','We pair you with a certified trainer and a fully personalised workout + nutrition plan.'],
-              ['03','Train & transform','Train anywhere, track every session, and watch your plan adapt automatically to your results.'],
-            ].map(([n,h,p]) => (
-              <div key={n} style={{ border:`1px solid ${L}`, borderRadius:20, padding:30, background:'linear-gradient(180deg,rgba(22,49,90,.32),transparent)', position:'relative', overflow:'hidden' }}>
-                <div className="display" style={{ fontSize:64, color:'rgba(77,139,255,.16)', lineHeight:.8 }}>{n}</div>
-                <h3 style={{ fontSize:21, fontWeight:800, margin:'14px 0 10px' }}>{h}</h3>
-                <p style={{ color:'var(--t2)', fontSize:15, lineHeight:1.55 }}>{p}</p>
+              { n:'01', h:'Diagnostic', p:'A precise intake on your goals, lifestyle, training history and any conditions — PCOD, thyroid, diabetes. Two minutes, fully calibrated.' },
+              { n:'02', h:'Engineer', p:'We match you to a certified coach and generate a personalised protocol: training load, nutrition macros and recovery, all in one system.' },
+              { n:'03', h:'Execute', p:'Train anywhere, log every set, and watch the protocol recalibrate against your real output week over week.' },
+            ].map(({ n, h, p }, i) => (
+              <div key={n} style={{ padding:'38px 32px', borderRight: i < 2 ? `1px solid ${LINE2}` : 'none', position:'relative' }}>
+                <div style={{ fontFamily:"'Anton',sans-serif", fontSize:60, color:'transparent', WebkitTextStroke:`1.2px ${LINE2}`, lineHeight:.8 }}>{n}</div>
+                <h3 style={{ fontFamily:"'Archivo',sans-serif", fontWeight:900, textTransform:'uppercase', fontSize:20, margin:'18px 0 10px', letterSpacing:'.01em' }}>{h}</h3>
+                <p style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12.5, lineHeight:1.6, color:'#9b9da4' }}>{p}</p>
               </div>
             ))}
           </div>
@@ -248,141 +414,226 @@ const Landing = () => {
       </section>
 
       {/* ── PROGRAMS ─────────────────────────────────────────────── */}
-      <section id="programs" style={{ paddingBottom:'96px' }}>
+      <section style={{ paddingBottom:'112px' }} id="programs">
         <div style={wrap}>
-          <div style={{ maxWidth:640, marginBottom:54 }}>
-            <span className="eyebrow">Programs</span>
-            <h2 style={{ fontSize:'clamp(34px,4.4vw,54px)', marginTop:16, lineHeight:1.02, fontWeight:800 }}>A plan for every body and every goal.</h2>
-            <p style={{ marginTop:18, color:'var(--t2)', fontSize:17, lineHeight:1.6 }}>From your first workout to specialised, condition-aware coaching — guided by trainers who've done it before.</p>
-          </div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', gap:18 }}>
-            {programs.map(({ ic, name, desc, tag }) => (
-              <div key={name} className="card card-hover" style={{ border:`1px solid ${L}`, borderRadius:18, padding:26, background:'rgba(10,25,49,.5)', cursor:'pointer' }}
-                onClick={() => setShowConsult(true)}>
-                <div style={{ width:48, height:48, borderRadius:13, display:'grid', placeItems:'center', background:'rgba(46,107,255,.14)', marginBottom:18, fontSize:24 }}>{ic}</div>
-                <h3 style={{ fontSize:18.5, fontWeight:800, fontFamily:'var(--font-body)' }}>{name}</h3>
-                <p style={{ color:'var(--t2)', fontSize:14, lineHeight:1.5, marginTop:9 }}>{desc}</p>
-                <div style={{ marginTop:16, fontSize:12.5, fontWeight:700, color:'var(--orange)', display:'inline-flex', alignItems:'center', gap:6 }}>{tag} →</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── FEATURE SPLIT ────────────────────────────────────────── */}
-      <section style={{ paddingBottom:'96px' }}>
-        <div style={{ ...wrap, display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))', gap:48, alignItems:'center' }}>
-          <div>
-            <span className="eyebrow">Built for busy people</span>
-            <h2 style={{ fontSize:'clamp(32px,4vw,46px)', fontWeight:800, lineHeight:1.04, marginTop:14 }}>Everything in one place — so nothing slips.</h2>
-            <div style={{ display:'flex', flexDirection:'column', gap:18, marginTop:26 }}>
-              {[
-                ['Adaptive programming','Plans recalibrate every week based on what you actually completed.'],
-                ['Trainer in your pocket','Message your trainer, share form videos and get real feedback fast.'],
-                ['Train anywhere','Home, gym or hotel room — every workout scales to your equipment.'],
-                ['One clear dashboard','Workouts, nutrition, sleep and progress photos, all in a single view.'],
-              ].map(([t,p]) => (
-                <div key={t} style={{ display:'flex', gap:15, alignItems:'flex-start' }}>
-                  <div style={{ width:26, height:26, borderRadius:8, background:'rgba(46,107,255,.16)', display:'grid', placeItems:'center', flexShrink:0, color:'var(--orange)' }}><Tick/></div>
-                  <div>
-                    <b style={{ fontWeight:700, fontSize:16 }}>{t}</b>
-                    <p style={{ color:'var(--t2)', fontSize:14.5, marginTop:3, lineHeight:1.5 }}>{p}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div style={{ border:`1px solid ${L}`, borderRadius:24, background:'linear-gradient(180deg,rgba(22,49,90,.4),rgba(10,25,49,.3))', padding:34, position:'relative', overflow:'hidden' }}>
-            <svg viewBox="0 0 400 200" fill="none" style={{ width:'100%', display:'block' }}>
-              <defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor={BLUE}/><stop offset="1" stopColor={CYAN}/></linearGradient></defs>
-              <polyline points="0,120 60,120 80,120 95,60 115,170 135,90 150,120 220,120 240,120 255,40 275,180 295,100 310,120 400,120" stroke="url(#pg)" strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round"/>
-            </svg>
-            <div style={{ position:'absolute', top:26, right:26, backdropFilter:'blur(8px)', background:'rgba(8,17,33,.7)', border:`1px solid ${L}`, borderRadius:13, padding:'12px 15px', fontSize:13 }}>
-              <b className="display" style={{ fontSize:20 }}>−6.2kg</b><div style={{ color:'var(--t2)', fontSize:11 }}>in 12 weeks</div>
-            </div>
-            <div style={{ position:'absolute', bottom:26, left:26, backdropFilter:'blur(8px)', background:'rgba(8,17,33,.7)', border:`1px solid ${L}`, borderRadius:13, padding:'12px 15px', fontSize:13 }}>
-              <b className="display" style={{ fontSize:20 }}>5×</b><div style={{ color:'var(--t2)', fontSize:11 }}>weekly streak</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── TESTIMONIALS ─────────────────────────────────────────── */}
-      <section style={{ paddingBottom:'96px' }}>
-        <div style={wrap}>
-          <div style={{ maxWidth:640, marginBottom:54 }}>
-            <span className="eyebrow">Trainers</span>
-            <h2 style={{ fontSize:'clamp(34px,4.4vw,54px)', marginTop:16, lineHeight:1.02, fontWeight:800 }}>Certified coaches who get results.</h2>
-            <p style={{ marginTop:18, color:'var(--t2)', fontSize:17, lineHeight:1.6 }}>Hand-picked, certified, and specialised — matched to your goals and your health profile.</p>
-          </div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:18 }}>
-            {testimonials.map(({ q, name, sub, init, bg, dark }) => (
-              <div key={name} style={{ border:`1px solid ${L}`, borderRadius:18, padding:28, background:'rgba(10,25,49,.5)' }}>
-                <div style={{ color:CYAN, letterSpacing:2, fontSize:14 }}>★★★★★</div>
-                <p style={{ margin:'16px 0 22px', fontSize:15.5, lineHeight:1.6, color:'#dce6fb' }}>{q}</p>
-                <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-                  <div style={{ width:42, height:42, borderRadius:'50%', display:'grid', placeItems:'center', fontWeight:800, color: dark ? '#06203a' : '#fff', background:bg, flexShrink:0 }}>{init}</div>
-                  <div><b style={{ fontWeight:700, fontSize:14.5 }}>{name}</b><div style={{ color:'var(--t3)', fontSize:12.5 }}>{sub}</div></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── PRICING ──────────────────────────────────────────────── */}
-      <section id="pricing" style={{ paddingBottom:'96px' }}>
-        <div style={wrap}>
-          <div style={{ maxWidth:640, marginBottom:54 }}>
-            <span className="eyebrow">Pricing</span>
-            <h2 style={{ fontSize:'clamp(34px,4.4vw,54px)', marginTop:16, lineHeight:1.02, fontWeight:800 }}>Start free. Upgrade when you're ready.</h2>
-            <p style={{ marginTop:18, color:'var(--t2)', fontSize:17, lineHeight:1.6 }}>No contracts. Cancel anytime. Every paid plan includes a 7-day free trial.</p>
-          </div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(270px,1fr))', gap:18, alignItems:'stretch' }}>
-            {plans.map(({ name, price, period, tag, sub, features, cta, primary }) => (
-              <div key={name} style={{
-                border: `1px solid ${primary ? 'rgba(77,139,255,.55)' : L}`,
-                borderRadius:22, padding:32, display:'flex', flexDirection:'column',
-                background: primary ? 'linear-gradient(180deg,rgba(46,107,255,.18),rgba(10,25,49,.5))' : 'rgba(10,25,49,.5)',
-                boxShadow: primary ? '0 24px 60px -24px rgba(46,107,255,.6)' : 'none',
-              }}>
-                {tag && <div style={{ alignSelf:'flex-start', fontSize:11, fontWeight:800, letterSpacing:'.1em', textTransform:'uppercase', color:'#fff', background:'var(--lime)', padding:'5px 11px', borderRadius:99, marginBottom:14 }}>{tag}</div>}
-                <div style={{ fontWeight:800, fontSize:16, letterSpacing:'.04em', textTransform:'uppercase' }}>{name}</div>
-                <div className="display" style={{ fontSize:52, margin:'14px 0 4px', letterSpacing:'.01em', lineHeight:1 }}>
-                  {price}<span style={{ fontFamily:'var(--font-body)', fontSize:15, color:'var(--t3)', fontWeight:600 }}>{period}</span>
-                </div>
-                <p style={{ color:primary ? 'var(--t2)' : 'var(--t3)', fontSize:14, marginBottom:22 }}>{sub}</p>
-                <ul style={{ listStyle:'none', display:'flex', flexDirection:'column', gap:13, marginBottom:26, flex:1 }}>
-                  {features.map(f => (
-                    <li key={f} style={{ display:'flex', gap:11, fontSize:14.5, color:'var(--t2)', alignItems:'flex-start' }}>
-                      <span style={{ color:'var(--orange)', flexShrink:0, marginTop:2 }}><Tick/></span>{f}
-                    </li>
-                  ))}
-                </ul>
-                <button onClick={() => !primary && null} className={`btn ${primary ? 'btn-primary' : 'btn-ghost'}`} style={{ justifyContent:'center', marginTop:'auto', padding:'13px 20px', fontSize:15 }}>
-                  {cta}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── CTA BAND ─────────────────────────────────────────────── */}
-      <section style={{ paddingBottom:'96px' }}>
-        <div style={wrap}>
-          <div style={{ position:'relative', border:`1px solid ${L}`, borderRadius:30, padding:'64px 48px', textAlign:'center', overflow:'hidden', background:'linear-gradient(135deg,rgba(46,107,255,.22),rgba(10,25,49,.6))' }}>
-            <div style={{ position:'absolute', width:460, height:460, borderRadius:'50%', background:`radial-gradient(circle,${BLUE},transparent 70%)`, filter:'blur(60px)', opacity:.4, top:-200, left:'50%', transform:'translateX(-50%)', pointerEvents:'none' }}/>
-            <div style={{ position:'relative', zIndex:2 }}>
-              <h2 className="display" style={{ fontSize:'clamp(36px,5vw,64px)', lineHeight:1 }}>
-                Your strongest self<br/>
-                <span style={{ background:`linear-gradient(120deg,var(--orange),${CYAN})`, WebkitBackgroundClip:'text', backgroundClip:'text', color:'transparent' }}>starts today.</span>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', gap:30, marginBottom:62, flexWrap:'wrap' }}>
+            <div style={{ maxWidth:680 }}>
+              <Eyebrow>// Programs</Eyebrow>
+              <h2 style={{ fontFamily:"'Anton',sans-serif", fontSize:'clamp(38px,5vw,74px)', marginTop:18, lineHeight:.88, textTransform:'uppercase', fontWeight:400 }}>
+                A protocol for{' '}
+                <span style={{ color:'transparent', WebkitTextStroke:`1.2px #9b9da4` }}>every objective.</span>
               </h2>
-              <p style={{ margin:'20px auto 32px', color:'var(--t2)', fontSize:18, maxWidth:520 }}>
-                Take the 2-minute assessment and get your first personalised plan free.
-              </p>
-              <button onClick={() => setShowConsult(true)} className="btn btn-primary" style={{ fontSize:16, padding:'17px 34px' }}>Free Consultation →</button>
             </div>
+            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, letterSpacing:'.16em', color:'#5f6168', textTransform:'uppercase', paddingBottom:8 }}>FIG.02 — PROGRAM INDEX</div>
+          </div>
+
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16 }} className="pgrid">
+            {programs.map(({ code, ico, name, desc, stat, statLbl, tag, hot }) => (
+              <div key={code} className="pcard-bp" onClick={() => setShowConsult(true)}
+                style={{ border:`1px solid ${hot ? LINE : LINE2}`, background: hot ? `linear-gradient(180deg,rgba(195,220,106,.08),transparent 62%)` : CHAR, padding:28, display:'flex', flexDirection:'column', cursor:'pointer', transition:'.2s', position:'relative' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = LINE; e.currentTarget.style.background = hot ? `linear-gradient(180deg,rgba(195,220,106,.1),transparent 62%)` : '#131419'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = hot ? LINE : LINE2; e.currentTarget.style.background = hot ? `linear-gradient(180deg,rgba(195,220,106,.08),transparent 62%)` : CHAR; e.currentTarget.style.transform = 'none'; }}>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                  <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:11, letterSpacing:'.14em', color: hot ? VOLT : '#5f6168', textTransform:'uppercase' }}>{code}</span>
+                  <span style={{ fontSize:24, lineHeight:1 }}>{ico}</span>
+                </div>
+                <h3 style={{ fontFamily:"'Archivo',sans-serif", fontWeight:900, textTransform:'uppercase', fontSize:21, letterSpacing:'.01em', margin:'22px 0 10px', lineHeight:1.04 }}>{name}</h3>
+                <p style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12.5, lineHeight:1.65, color:'#9b9da4', flex:1 }}>{desc}</p>
+                <div style={{ marginTop:22, paddingTop:16, borderTop:`1px solid ${LINE2}`, display:'flex', alignItems:'flex-end', justifyContent:'space-between' }}>
+                  <div>
+                    <b style={{ fontFamily:"'Anton',sans-serif", fontSize:24, color:VOLT, display:'block', lineHeight:1 }}>{stat}</b>
+                    <small style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:9, letterSpacing:'.1em', textTransform:'uppercase', color:'#5f6168', display:'block', marginTop:5 }}>{statLbl}</small>
+                  </div>
+                  <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:11, letterSpacing:'.1em', textTransform:'uppercase', color:VOLT }}>{tag}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── PROOF / TESTIMONIALS ─────────────────────────────────── */}
+      <section style={{ paddingBottom:'112px' }} id="proof">
+        <div style={wrap}>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', gap:30, marginBottom:62, flexWrap:'wrap' }}>
+            <div style={{ maxWidth:680 }}>
+              <Eyebrow>// Proof in motion</Eyebrow>
+              <h2 style={{ fontFamily:"'Anton',sans-serif", fontSize:'clamp(38px,5vw,74px)', marginTop:18, lineHeight:.88, textTransform:'uppercase', fontWeight:400 }}>
+                Results,{' '}
+                <span style={{ color:'transparent', WebkitTextStroke:`1.2px #9b9da4` }}>measured.</span>
+              </h2>
+            </div>
+            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, letterSpacing:'.16em', color:'#5f6168', textTransform:'uppercase', paddingBottom:8 }}>FIG.03 — FIELD DATA</div>
+          </div>
+
+          {/* Before / After cards — Blueprint style */}
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 }} className="ba-grid">
+            {[
+              {
+                name:'Priya M.', sub:'Fat-Loss Engine · Bengaluru', week:12,
+                metrics:[{val:'12',lbl:'Weeks',neg:false},{val:'−21',lbl:'lbs',neg:true},{val:'+35%',lbl:'Squat max',neg:false}],
+              },
+              {
+                name:'Arjun K.', sub:'Strength Matrix · Mumbai', week:16,
+                metrics:[{val:'16',lbl:'Weeks',neg:false},{val:'+8.4',lbl:'kg lean',neg:false},{val:'+50%',lbl:'Pull vol.',neg:false}],
+              },
+            ].map(({ name, sub, week, metrics }) => (
+              <div key={name} style={{ border:`1px solid ${LINE2}`, background:CHAR, overflow:'hidden' }}>
+                {/* Split image area */}
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', position:'relative', height:260 }}>
+                  {/* Before slot */}
+                  <div style={{
+                    background:'#0d0e12',
+                    backgroundImage:`linear-gradient(rgba(195,220,106,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(195,220,106,.03) 1px,transparent 1px)`,
+                    backgroundSize:'36px 36px',
+                    position:'relative', display:'flex', alignItems:'center', justifyContent:'center',
+                  }}>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={VOLT} strokeWidth="1" opacity=".25">
+                      <rect x="3" y="3" width="18" height="18"/><circle cx="8.5" cy="8.5" r="1.5" fill={VOLT} stroke="none"/><polyline points="21,15 16,10 5,21"/>
+                    </svg>
+                    <span style={{ position:'absolute', top:12, left:12, fontFamily:"'JetBrains Mono',monospace", fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', background:'rgba(8,9,11,.78)', backdropFilter:'blur(4px)', padding:'5px 9px', color:'#f3f4ef', border:`1px solid ${LINE2}`, zIndex:4 }}>Before</span>
+                  </div>
+                  {/* After slot */}
+                  <div style={{
+                    background:'#0f1009',
+                    backgroundImage:`linear-gradient(rgba(195,220,106,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(195,220,106,.05) 1px,transparent 1px)`,
+                    backgroundSize:'36px 36px',
+                    position:'relative', display:'flex', alignItems:'center', justifyContent:'center',
+                  }}>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={VOLT} strokeWidth="1" opacity=".4">
+                      <rect x="3" y="3" width="18" height="18"/><circle cx="8.5" cy="8.5" r="1.5" fill={VOLT} stroke="none"/><polyline points="21,15 16,10 5,21"/>
+                    </svg>
+                    <span style={{ position:'absolute', top:12, right:12, fontFamily:"'JetBrains Mono',monospace", fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', background:'rgba(8,9,11,.78)', backdropFilter:'blur(4px)', padding:'5px 9px', color:VOLT, border:`1px solid ${LINE}`, zIndex:4 }}>Week {week}</span>
+                  </div>
+                  {/* Volt divider */}
+                  <div style={{ position:'absolute', left:'50%', top:0, bottom:0, width:1, background:VOLT, opacity:.6, transform:'translateX(-.5px)', zIndex:3 }}/>
+                </div>
+                {/* Data row */}
+                <div style={{ display:'flex', alignItems:'stretch', borderTop:`1px solid ${LINE2}` }}>
+                  <div style={{ padding:'18px 20px', flex:1, borderRight:`1px solid ${LINE2}` }}>
+                    <b style={{ fontFamily:"'Archivo',sans-serif", fontWeight:800, fontSize:15, display:'block' }}>{name}</b>
+                    <small style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, letterSpacing:'.1em', textTransform:'uppercase', color:'#5f6168', display:'block', marginTop:5 }}>{sub}</small>
+                  </div>
+                  {metrics.map(({ val, lbl, neg }) => (
+                    <div key={lbl} style={{ padding:'18px', borderRight:`1px solid ${LINE2}`, textAlign:'center', flex:'0 0 auto' }}>
+                      <b style={{ fontFamily:"'Anton',sans-serif", fontSize:26, lineHeight:1, display:'block', color: neg ? AMBER : VOLT }}>{val}</b>
+                      <small style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:9, letterSpacing:'.1em', textTransform:'uppercase', color:'#5f6168', display:'block', marginTop:6 }}>{lbl}</small>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Review marquee */}
+        <div style={{ marginTop:48, borderTop:`1px solid ${LINE2}`, borderBottom:`1px solid ${LINE2}`, background:CHAR, overflow:'hidden', padding:'22px 0', position:'relative' }}>
+          <div style={{ position:'absolute', top:0, bottom:0, left:0, width:120, background:`linear-gradient(90deg,${CHAR},transparent)`, zIndex:3, pointerEvents:'none' }}/>
+          <div style={{ position:'absolute', top:0, bottom:0, right:0, width:120, background:`linear-gradient(270deg,${CHAR},transparent)`, zIndex:3, pointerEvents:'none' }}/>
+          <div style={{ display:'flex', gap:16, width:'max-content', animation:'marquee 42s linear infinite' }}>
+            {[...reviews, ...reviews].map(({ init, bg, q, name }, i) => (
+              <div key={i} style={{ display:'flex', alignItems:'center', gap:13, border:`1px solid ${LINE2}`, background:BG, padding:'13px 18px', minWidth:330 }}>
+                <div style={{ width:38, height:38, flexShrink:0, display:'grid', placeItems:'center', fontFamily:"'Archivo',sans-serif", fontWeight:800, color: bg === VOLT ? '#14160c' : '#fff', background:bg, fontSize:14 }}>{init}</div>
+                <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, lineHeight:1.4, color:'#f3f4ef' }}>
+                  <span style={{ color:VOLT, letterSpacing:1, fontSize:10, display:'block', marginBottom:3 }}>★★★★★</span>
+                  <span dangerouslySetInnerHTML={{ __html: q + ' — <b style="color:' + VOLT + '">' + name + '</b>' }}/>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── PRICING MATRIX ───────────────────────────────────────── */}
+      <section style={{ paddingBottom:'112px' }} id="pricing">
+        <div style={wrap}>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', gap:30, marginBottom:62, flexWrap:'wrap' }}>
+            <div style={{ maxWidth:680 }}>
+              <Eyebrow>// Plans</Eyebrow>
+              <h2 style={{ fontFamily:"'Anton',sans-serif", fontSize:'clamp(38px,5vw,74px)', marginTop:18, lineHeight:.88, textTransform:'uppercase', fontWeight:400 }}>
+                Pick your{' '}
+                <span style={{ color:'transparent', WebkitTextStroke:`1.2px #9b9da4` }}>protocol.</span>
+              </h2>
+            </div>
+            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, letterSpacing:'.16em', color:'#5f6168', textTransform:'uppercase', paddingBottom:8 }}>FIG.04 — PLAN MATRIX</div>
+          </div>
+
+          <div style={{ border:`1px solid ${LINE3}`, background:CHAR, overflowX:'auto' }}>
+            <table style={{ width:'100%', borderCollapse:'collapse', minWidth:680 }}>
+              <colgroup><col/><col/><col style={{ background:'rgba(195,220,106,.06)' }}/><col/></colgroup>
+              <thead>
+                <tr>
+                  <th style={{ ...thBase, background:'#131419' }}>
+                    <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:11, letterSpacing:'.16em', textTransform:'uppercase', color:'#5f6168', fontWeight:500 }}>Specification</span>
+                  </th>
+                  {[
+                    { name:'Starter', price:'Free', hot:false },
+                    { name:'Pro', price:'₹1,499/mo', hot:true },
+                    { name:'Elite', price:'₹2,999/mo', hot:false },
+                  ].map(({ name, price, hot }) => (
+                    <th key={name} style={{ ...thBase, background: hot ? 'rgba(195,220,106,.08)' : '#131419', position:'relative', verticalAlign:'bottom' }}>
+                      {hot && <span style={{ position:'absolute', top:10, right:16, fontFamily:"'JetBrains Mono',monospace", fontSize:9, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase', color:'#14160c', background:VOLT, padding:'3px 8px' }}>Most chosen</span>}
+                      <span style={{ fontFamily:"'Archivo',sans-serif", fontWeight:900, textTransform:'uppercase', fontSize:16, letterSpacing:'.02em', display:'block' }}>{name}</span>
+                      <span style={{ fontFamily:"'Anton',sans-serif", fontSize:32, lineHeight:1, display:'block', marginTop:8, color: hot ? VOLT : '#f3f4ef' }}>{price.replace('/mo','')}<span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, color:'#5f6168', fontWeight:400 }}>{price.includes('/mo') ? '/mo' : ''}</span></span>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ['Personalised diagnostic', '✓', '✓', '✓', [false,true,false]],
+                  ['Adaptive workout protocol', 'Starter plan', 'Full + weekly recalibration', 'Full + weekly recalibration', [false,false,false]],
+                  ['Dedicated certified coach', '—', '✓', '✓', [false,false,false]],
+                  ['Nutrition & macro tracking', '—', '✓', '✓', [false,false,false]],
+                  ['Real-time analytics', 'Basic', 'Advanced', 'Advanced', [false,false,false]],
+                  ['Chat support', '—', 'Unlimited', 'Priority', [false,false,false]],
+                  ['1-on-1 video coaching', '—', '—', 'Weekly', [false,false,false]],
+                  ['Condition specialist access', '—', '—', '✓', [false,false,false]],
+                ].map(([feat, s, p, e, highlights]) => (
+                  <tr key={feat}>
+                    <td style={{ ...tdBase }}><span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:13, color:'#9b9da4' }}>{feat}</span></td>
+                    <td style={{ ...tdBase }}><span style={{ ...cellStyle(s) }}>{s}</span></td>
+                    <td style={{ ...tdBase, background:'rgba(195,220,106,.04)' }}><span style={{ ...cellStyle(p) }}>{p}</span></td>
+                    <td style={{ ...tdBase }}><span style={{ ...cellStyle(e) }}>{e}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td style={{ ...tdBase, border:0 }}/>
+                  <td style={{ ...tdBase, border:0 }}><button className="btn btn-ghost btn-sm" style={{ fontSize:11, padding:'10px 16px' }}>Get started</button></td>
+                  <td style={{ ...tdBase, border:0, background:'rgba(195,220,106,.04)' }}><button className="btn btn-primary btn-sm" style={{ fontSize:11, padding:'10px 16px' }} onClick={() => setShowConsult(true)}>Free Consultation →</button></td>
+                  <td style={{ ...tdBase, border:0 }}><button className="btn btn-ghost btn-sm" style={{ fontSize:11, padding:'10px 16px' }}>Choose Elite</button></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* ── GATE / CTA ───────────────────────────────────────────── */}
+      <section style={{ position:'relative', overflow:'hidden', borderTop:`1px solid ${LINE2}` }} id="gate">
+        <GridBg style={{ opacity:1, WebkitMaskImage:'radial-gradient(80% 130% at 50% 120%,#000 20%,transparent 70%)', maskImage:'radial-gradient(80% 130% at 50% 120%,#000 20%,transparent 70%)' }}/>
+        <div style={{ position:'absolute', left:'50%', bottom:-340, width:760, height:760, borderRadius:'50%', background:'radial-gradient(circle,rgba(195,220,106,.1),transparent 62%)', transform:'translateX(-50%)', pointerEvents:'none' }}/>
+        <div style={{ ...wrap, position:'relative', zIndex:3, textAlign:'center', padding:'120px 0' }}>
+          <Eyebrow>// Start here</Eyebrow>
+          <h2 style={{ fontFamily:"'Anton',sans-serif", fontSize:'clamp(44px,6.6vw,100px)', lineHeight:.88, textTransform:'uppercase', fontWeight:400, marginTop:18, fontStyle:'italic', transform:'skewX(-7deg)', transformOrigin:'center' }}>
+            Ready to unlock<br/>
+            your <span style={{ color:VOLT }}>M-Power?</span>
+          </h2>
+          <p style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:14, letterSpacing:'.04em', color:'#9b9da4', margin:'26px auto 0', maxWidth:500, lineHeight:1.6 }}>
+            Book a free consultation, run the 2-minute diagnostic, and get your first engineered protocol — free. No contracts. Cancel anytime.
+          </p>
+          <form onSubmit={e => { e.preventDefault(); setShowConsult(true); }}
+            style={{ display:'flex', maxWidth:540, margin:'38px auto 0', border:`1.5px solid ${LINE3}`, background:'rgba(14,15,18,.6)', backdropFilter:'blur(8px)', transition:'.2s' }}
+            onFocus={e => e.currentTarget.style.borderColor = VOLT}
+            onBlur={e => e.currentTarget.style.borderColor = LINE3}>
+            <input type="email" placeholder="your@email.com" value={email} onChange={e => setEmail(e.target.value)}
+              style={{ flex:1, background:'transparent', border:0, outline:0, color:'#f3f4ef', fontFamily:"'JetBrains Mono',monospace", fontSize:14, padding:'0 20px', letterSpacing:'.02em' }}/>
+            <button type="submit" className="btn btn-primary" style={{ clipPath:'none', borderRadius:0 }}>Free Consultation →</button>
+          </form>
+          <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:11, letterSpacing:'.08em', color:'#5f6168', marginTop:18, textTransform:'uppercase' }}>
+            7-day free trial · No card required
           </div>
         </div>
       </section>
@@ -394,8 +645,44 @@ const Landing = () => {
           <ConsultationModal onClose={() => { setShowConsult(false); refreshConsultDone(); }}/>
         </Suspense>
       )}
+
+      {/* Blueprint marquee keyframes (local — globals.css marquee might conflict) */}
+      <style>{`
+        @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+        @media(max-width:900px){
+          .hero-inner { grid-template-columns:1fr !important; }
+          .hero-left-bp { padding:56px 0 48px !important; }
+          .hero-right-bp { border-left:0 !important; border-top:1px solid rgba(255,255,255,.07) !important; min-height:420px !important; }
+        }
+        @media(max-width:900px){ .landing-nav-links { display:none !important; } .landing-hamburger { display:inline-flex !important; } }
+        @media(max-width:760px){
+          .steps-grid { grid-template-columns:1fr !important; }
+          .pgrid { grid-template-columns:1fr 1fr !important; }
+          .ba-grid { grid-template-columns:1fr !important; }
+        }
+        @media(max-width:520px){ .pgrid { grid-template-columns:1fr !important; } }
+      `}</style>
     </div>
   );
 };
+
+/* ── Table cell helpers ───────────────────────────────────────── */
+const thBase = {
+  textAlign: 'left', padding: '20px 24px',
+  borderBottom: `1px solid rgba(255,255,255,.07)`,
+  borderRight: `1px solid rgba(255,255,255,.07)`,
+  verticalAlign: 'bottom',
+};
+const tdBase = {
+  textAlign: 'left', padding: '16px 24px',
+  borderBottom: `1px solid rgba(255,255,255,.07)`,
+  borderRight: `1px solid rgba(255,255,255,.07)`,
+};
+const cellStyle = (v) => ({
+  fontFamily: "'JetBrains Mono',monospace", fontSize: 13,
+  color: v === '✓' ? '#c3dc6a' : v === '—' ? '#5f6168' : '#f3f4ef',
+  fontWeight: v === '✓' ? 700 : 400,
+});
 
 export default Landing;

@@ -26,14 +26,14 @@ const TrainerLogin = () => {
 
   return (
     <div style={{ minHeight:'100vh', background:'var(--black)', display:'flex', alignItems:'center', justifyContent:'center', padding:'24px', position:'relative', overflow:'hidden' }}>
-      <div style={{ position:'absolute', top:'15%', left:'8%', width:450, height:450, background:'radial-gradient(circle, rgba(91,168,255,0.07) 0%, transparent 65%)', pointerEvents:'none' }}/>
+      <div style={{ position:'absolute', top:'15%', left:'8%', width:450, height:450, background:'radial-gradient(circle, rgba(232,116,63,0.06) 0%, transparent 65%)', pointerEvents:'none' }}/>
 
       <div style={{ width:'100%', maxWidth:420, animation:'slideUp 0.45s ease forwards' }}>
         <div style={{ display:'flex', justifyContent:'center', marginBottom:36 }}>
           <LogoFull height={55} />
         </div>
 
-        <div style={{ background:'linear-gradient(180deg,rgba(22,49,90,.55),rgba(10,25,49,.45))', border:'1px solid rgba(120,160,230,.14)', borderRadius:20, backdropFilter:'blur(8px)', padding:'36px 32px' }}>
+        <div style={{ background:'linear-gradient(180deg,rgba(22,24,29,.7),rgba(14,15,18,.6))', border:'1px solid rgba(255,255,255,.07)', borderRadius:2, backdropFilter:'blur(8px)', padding:'36px 32px' }}>
           <h1 style={{ fontSize:24, fontWeight:700, marginBottom:6, color:'var(--text-primary)' }}>Trainer Sign In</h1>
           <p style={{ color:'var(--text-secondary)', fontSize:14, marginBottom:28 }}>Access your dashboard and manage clients</p>
 

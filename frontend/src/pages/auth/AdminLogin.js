@@ -31,7 +31,7 @@ const AdminLogin = () => {
           <LogoFull height={55} />
         </div>
 
-        <div style={{ background:'linear-gradient(180deg,rgba(22,49,90,.55),rgba(10,25,49,.45))', border:'1px solid rgba(120,160,230,.14)', borderRadius:20, backdropFilter:'blur(8px)', padding:'36px 32px' }}>
+        <div style={{ background:'linear-gradient(180deg,rgba(22,24,29,.7),rgba(14,15,18,.6))', border:'1px solid rgba(255,255,255,.07)', borderRadius:2, backdropFilter:'blur(8px)', padding:'36px 32px' }}>
           <h1 style={{ fontSize:24, fontWeight:700, marginBottom:6, color:'var(--text-primary)' }}>Admin Sign In</h1>
           <p style={{ color:'var(--text-secondary)', fontSize:14, marginBottom:28 }}>Restricted — authorised personnel only</p>
 

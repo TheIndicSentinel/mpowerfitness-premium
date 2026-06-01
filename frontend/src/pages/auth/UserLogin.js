@@ -37,17 +37,17 @@ const UserLogin = () => {
 
   return (
     <div style={{ minHeight:'100vh', background:'var(--black)', display:'flex', alignItems:'center', justifyContent:'center', padding:'24px', position:'relative', overflow:'hidden' }}>
-      <div style={{ position:'absolute', top:'10%', right:'-5%', width:480, height:480, borderRadius:'50%', background:'radial-gradient(circle,#2e6bff,transparent 70%)', filter:'blur(70px)', opacity:.45, pointerEvents:'none' }}/>
-      <div style={{ position:'absolute', bottom:'5%', left:'-5%', width:360, height:360, borderRadius:'50%', background:'radial-gradient(circle,#43d0ff,transparent 70%)', filter:'blur(70px)', opacity:.2, pointerEvents:'none' }}/>
+      <div style={{ position:'absolute', top:'10%', right:'-5%', width:480, height:480, borderRadius:'50%', background:'radial-gradient(circle,rgba(195,220,106,.35),transparent 70%)', filter:'blur(70px)', opacity:.3, pointerEvents:'none' }}/>
+      <div style={{ position:'absolute', bottom:'5%', left:'-5%', width:360, height:360, borderRadius:'50%', background:'radial-gradient(circle,rgba(232,116,63,.3),transparent 70%)', filter:'blur(70px)', opacity:.18, pointerEvents:'none' }}/>
 
       <div style={{ width:'100%', maxWidth:420, animation:'slideUp 0.45s ease forwards' }}>
         <div style={{ display:'flex', justifyContent:'center', marginBottom:36 }}>
           <LogoFull height={55} />
         </div>
 
-        <div style={{ background:'linear-gradient(180deg,rgba(22,49,90,.55),rgba(10,25,49,.45))', border:'1px solid rgba(120,160,230,.14)', borderRadius:20, padding:'36px 32px', backdropFilter:'blur(8px)' }}>
+        <div style={{ background:'linear-gradient(180deg,rgba(22,24,29,.7),rgba(14,15,18,.6))', border:'1px solid rgba(255,255,255,.07)', padding:'36px 32px', backdropFilter:'blur(8px)', clipPath:'polygon(0 0,100% 0,100% 100%,18px 100%,0 calc(100% - 18px))' }}>
           <h1 style={{ fontSize:24, fontWeight:700, marginBottom:6, color:'var(--text-primary)' }}>Welcome back</h1>
-          <p style={{ color:'var(--text-secondary)', fontSize:14, marginBottom:28 }}>Sign in to continue your fitness journey</p>
+          <p style={{ fontFamily:"'JetBrains Mono',monospace", color:'var(--t2)', fontSize:13, letterSpacing:'.04em', marginBottom:28 }}>Sign in to continue your fitness journey</p>
 
           <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:18 }}>
             <div className="form-group">

@@ -36,15 +36,15 @@ const TrainerRegister = () => {
 
   return (
     <div style={{ minHeight:'100vh', background:'var(--black)', display:'flex', alignItems:'center', justifyContent:'center', padding:'24px', position:'relative', overflow:'hidden' }}>
-      <div style={{ position:'absolute', bottom:'15%', left:'10%', width:400, height:400, background:'radial-gradient(circle, rgba(91,168,255,0.06) 0%, transparent 65%)', pointerEvents:'none' }}/>
+      <div style={{ position:'absolute', bottom:'15%', left:'10%', width:400, height:400, background:'radial-gradient(circle, rgba(232,116,63,0.05) 0%, transparent 65%)', pointerEvents:'none' }}/>
 
       <div style={{ width:'100%', maxWidth:500, animation:'slideUp 0.45s ease forwards' }}>
         <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:12, marginBottom:32 }}>
           <LogoFull height={55} />
-          <span style={{ background:'rgba(91,168,255,0.12)', color:'var(--electric-orange)', border:'1px solid rgba(91,168,255,0.25)', borderRadius:6, padding:'3px 10px', fontSize:11, fontWeight:600, letterSpacing:'0.08em', textTransform:'uppercase' }}>Trainer Application</span>
+          <span style={{ background:'rgba(232,116,63,0.1)', color:'var(--electric-orange)', border:'1px solid rgba(232,116,63,0.22)', borderRadius:6, padding:'3px 10px', fontSize:11, fontWeight:600, letterSpacing:'0.08em', textTransform:'uppercase' }}>Trainer Application</span>
         </div>
 
-        <div style={{ background:'linear-gradient(180deg,rgba(22,49,90,.55),rgba(10,25,49,.45))', border:'1px solid rgba(120,160,230,.14)', borderRadius:20, backdropFilter:'blur(8px)', padding:'36px 32px' }}>
+        <div style={{ background:'linear-gradient(180deg,rgba(22,24,29,.7),rgba(14,15,18,.6))', border:'1px solid rgba(255,255,255,.07)', borderRadius:2, backdropFilter:'blur(8px)', padding:'36px 32px' }}>
           {/* Step indicator */}
           <div style={{ display:'flex', gap:8, marginBottom:28 }}>
             {[1,2].map(n => (
@@ -90,8 +90,8 @@ const TrainerRegister = () => {
                     {SPECIALIZATIONS.map(s => (
                       <button key={s} type="button" onClick={() => toggleSpec(s)} style={{
                         padding:'6px 12px', borderRadius:6, border:'1px solid',
-                        borderColor: form.specializations.includes(s) ? 'rgba(91,168,255,0.5)' : 'var(--border)',
-                        background: form.specializations.includes(s) ? 'rgba(91,168,255,0.12)' : 'var(--surface-2)',
+                        borderColor: form.specializations.includes(s) ? 'rgba(232,116,63,0.4)' : 'var(--border)',
+                        background: form.specializations.includes(s) ? 'rgba(232,116,63,0.1)' : 'var(--surface-2)',
                         color: form.specializations.includes(s) ? 'var(--electric-orange)' : 'var(--text-secondary)',
                         fontSize:12, cursor:'pointer', fontFamily:'var(--font-body)', transition:'all 0.15s'
                       }}>{s.replace(/_/g,' ')}</button>

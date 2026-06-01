@@ -79,13 +79,13 @@ const Chip = ({ selected, onClick, icon, label, desc, badge }) => (
   <button type="button" onClick={onClick} style={{
     padding:'12px 14px', borderRadius:10, textAlign:'left', cursor:'pointer',
     transition:'all 0.2s', display:'flex', alignItems:'flex-start', gap:10, position:'relative',
-    background: selected ? 'rgba(46,138,255,0.1)' : 'var(--surface-2)',
-    border: `1px solid ${selected ? 'rgba(46,138,255,0.45)' : 'var(--border)'}`,
-    boxShadow: selected ? '0 0 0 1px rgba(46,138,255,0.2)' : 'none',
+    background: selected ? 'rgba(195,220,106,0.08)' : 'var(--surface-2)',
+    border: `1px solid ${selected ? 'rgba(195,220,106,0.4)' : 'var(--border)'}`,
+    boxShadow: selected ? '0 0 0 1px rgba(195,220,106,0.16)' : 'none',
   }}>
     {badge && (
       <span style={{ position:'absolute', top:-8, right:10, background:'var(--electric-orange)', color:'#000',
-        fontSize:9, fontWeight:800, padding:'2px 7px', borderRadius:20, letterSpacing:'0.06em', textTransform:'uppercase' }}>
+        fontSize:9, fontWeight:800, padding:'2px 7px', borderRadius:2, letterSpacing:'0.06em', textTransform:'uppercase' }}>
         {badge}
       </span>
     )}
@@ -141,9 +141,9 @@ const Onboarding = () => {
   return (
     <div style={{ minHeight:'100vh', background:'var(--black)', display:'flex', alignItems:'center', justifyContent:'center', padding:'24px 16px' }}>
       <div style={{ position:'absolute', top:'10%', right:'8%', width:400, height:400,
-        background:'radial-gradient(circle, rgba(46,138,255,0.05) 0%, transparent 65%)', pointerEvents:'none' }}/>
+        background:'radial-gradient(circle, rgba(195,220,106,0.04) 0%, transparent 65%)', pointerEvents:'none' }}/>
       <div style={{ position:'absolute', bottom:'15%', left:'5%', width:300, height:300,
-        background:'radial-gradient(circle, rgba(91,168,255,0.04) 0%, transparent 65%)', pointerEvents:'none' }}/>
+        background:'radial-gradient(circle, rgba(232,116,63,0.04) 0%, transparent 65%)', pointerEvents:'none' }}/>
 
       <div style={{ width:'100%', maxWidth:600, animation:'slideUp 0.45s ease forwards' }}>
         {/* Header */}
@@ -156,12 +156,12 @@ const Onboarding = () => {
         <div style={{ display:'flex', gap:5, marginBottom:28 }}>
           {STEPS.map((_, i) => (
             <div key={i} style={{ flex:1, height:3, borderRadius:2, transition:'background 0.35s',
-              background: i < step ? 'var(--neon-lime)' : i === step ? 'rgba(46,138,255,0.6)' : 'var(--surface-3)' }}/>
+              background: i < step ? 'var(--neon-lime)' : i === step ? 'rgba(195,220,106,0.5)' : 'var(--surface-3)' }}/>
           ))}
         </div>
 
         {/* Card */}
-        <div style={{ background:'linear-gradient(180deg,rgba(22,49,90,.55),rgba(10,25,49,.45))', border:'1px solid rgba(120,160,230,.14)', borderRadius:20, backdropFilter:'blur(8px)', padding:'32px 28px', minHeight:360 }}>
+        <div style={{ background:'linear-gradient(180deg,rgba(22,24,29,.7),rgba(14,15,18,.6))', border:'1px solid rgba(255,255,255,.07)', borderRadius:2, backdropFilter:'blur(8px)', padding:'32px 28px', minHeight:360 }}>
           <h2 style={{ fontSize:22, fontWeight:700, marginBottom:4 }}>{STEPS[step].title}</h2>
           <p style={{ color:'var(--text-secondary)', fontSize:13, marginBottom:24, lineHeight:1.5 }}>{STEPS[step].subtitle}</p>
 
@@ -183,8 +183,8 @@ const Onboarding = () => {
                 <button key={l.value} type="button" onClick={() => setData(d => ({...d, fitnessLevel:l.value}))} style={{
                   padding:'18px 20px', borderRadius:10, textAlign:'left', cursor:'pointer', transition:'all 0.2s',
                   display:'flex', alignItems:'center', gap:16,
-                  background: data.fitnessLevel === l.value ? 'rgba(46,138,255,0.1)' : 'var(--surface-2)',
-                  border: `1px solid ${data.fitnessLevel === l.value ? 'rgba(46,138,255,0.4)' : 'var(--border)'}`,
+                  background: data.fitnessLevel === l.value ? 'rgba(195,220,106,0.08)' : 'var(--surface-2)',
+                  border: `1px solid ${data.fitnessLevel === l.value ? 'rgba(195,220,106,0.35)' : 'var(--border)'}`,
                 }}>
                   <span style={{ fontSize:28, flexShrink:0 }}>{l.icon}</span>
                   <div>
@@ -252,8 +252,8 @@ const Onboarding = () => {
                     icon={c.icon} label={c.label} desc={c.desc}/>
                 ))}
               </div>
-              <div style={{ marginTop:18, padding:'12px 14px', background:'rgba(46,138,255,0.05)',
-                border:'1px solid rgba(46,138,255,0.15)', borderRadius:8, display:'flex', gap:8, alignItems:'flex-start' }}>
+              <div style={{ marginTop:18, padding:'12px 14px', background:'rgba(195,220,106,0.04)',
+                border:'1px solid rgba(195,220,106,0.12)', borderRadius:8, display:'flex', gap:8, alignItems:'flex-start' }}>
                 <span style={{ fontSize:16, flexShrink:0 }}>🔒</span>
                 <p style={{ fontSize:12, color:'var(--text-muted)', lineHeight:1.5, margin:0 }}>
                   This information is used only to personalise your fitness and nutrition recommendations.
@@ -283,12 +283,12 @@ const Onboarding = () => {
                 <button key={b.value} type="button" onClick={() => setData(d => ({...d, budgetSegment:b.value}))} style={{
                   padding:'16px 18px', borderRadius:12, textAlign:'left', cursor:'pointer',
                   transition:'all 0.2s', position:'relative',
-                  background: data.budgetSegment === b.value ? 'rgba(46,138,255,0.08)' : 'var(--surface-2)',
-                  border: `1px solid ${data.budgetSegment === b.value ? 'rgba(46,138,255,0.45)' : 'var(--border)'}`,
+                  background: data.budgetSegment === b.value ? 'rgba(195,220,106,0.07)' : 'var(--surface-2)',
+                  border: `1px solid ${data.budgetSegment === b.value ? 'rgba(195,220,106,0.4)' : 'var(--border)'}`,
                 }}>
                   {b.popular && (
                     <span style={{ position:'absolute', top:-10, right:14, background:'var(--electric-orange)', color:'#000',
-                      fontSize:9, fontWeight:800, padding:'3px 9px', borderRadius:20, letterSpacing:'0.07em', textTransform:'uppercase' }}>
+                      fontSize:9, fontWeight:800, padding:'3px 9px', borderRadius:2, letterSpacing:'0.07em', textTransform:'uppercase' }}>
                       POPULAR
                     </span>
                   )}

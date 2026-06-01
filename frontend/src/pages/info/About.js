@@ -8,10 +8,17 @@ const InfoLayout = ({ title, description, children }) => {
   useDocumentTitle(title, description);
   return (
     <div style={{ minHeight:'100vh', background:'var(--black)', display:'flex', flexDirection:'column' }}>
-      <header style={{ backdropFilter:'blur(14px)', background:'rgba(8,17,33,.82)', borderBottom:'1px solid rgba(120,160,230,.14)', padding:'0 clamp(16px,4vw,40px)', height:74, display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, zIndex:100 }}>
-        <LogoFull height={50} linkTo="/"/>
+      <header style={{ backdropFilter:'blur(18px)', background:'rgba(8,9,11,.85)', borderBottom:'1px solid rgba(255,255,255,.07)', padding:'0 clamp(16px,4vw,40px)', height:76, display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, zIndex:100 }}>
+        {/* Blueprint logo mark */}
+        <Link to="/" style={{ display:'flex', alignItems:'center', gap:13, textDecoration:'none' }}>
+          <div style={{ width:38, height:38, display:'grid', placeItems:'center', border:'1.5px solid var(--volt)', fontFamily:"'Anton',sans-serif", fontSize:19, color:'var(--volt)', clipPath:'polygon(0 0,100% 0,100% 100%,7px 100%,0 calc(100% - 7px))' }}>M</div>
+          <div>
+            <b style={{ display:'block', fontFamily:"'Archivo',sans-serif", fontWeight:900, fontSize:15, letterSpacing:'.02em', lineHeight:1, textTransform:'uppercase', color:'var(--t1)' }}>MPower Fitness</b>
+            <span style={{ display:'block', fontFamily:"'JetBrains Mono',monospace", fontSize:7.5, letterSpacing:'.22em', color:'var(--t3)', marginTop:2 }}>PERFORMANCE SYSTEMS</span>
+          </div>
+        </Link>
         <div style={{ display:'flex', gap:12 }}>
-          <Link to="/login" className="btn btn-primary btn-sm">Login</Link>
+          <Link to="/login" className="btn btn-primary btn-sm" style={{ fontSize:11, padding:'8px 16px' }}>Log in</Link>
         </div>
       </header>
       <main style={{ flex:1, padding:'clamp(32px,5vw,64px) clamp(16px,4vw,40px)', maxWidth:960, margin:'0 auto', width:'100%' }}>
