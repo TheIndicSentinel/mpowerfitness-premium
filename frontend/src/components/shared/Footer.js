@@ -47,13 +47,13 @@ const Footer = ({ variant = 'app' }) => {
 
   return (
     <footer style={{
-      background: 'var(--carbon)',
-      borderTop: '1px solid var(--border)',
+      background: '#0e0f12',
+      borderTop: '1px solid rgba(255,255,255,.07)',
       padding: isLanding ? 'clamp(32px,5vw,56px) clamp(16px,4vw,40px) 24px' : '32px var(--page-pad,28px) 24px',
       marginTop: 'auto',
     }}>
-      <div style={{ maxWidth: isLanding ? 1200 : '100%', margin: '0 auto' }}>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))', gap:32, marginBottom:32 }}>
+      <div style={{ maxWidth: isLanding ? 1280 : '100%', margin: '0 auto' }}>
+        <div className="foot" style={{ display:'grid', gridTemplateColumns: isLanding ? '1.7fr 1fr 1fr 1fr 1fr' : 'repeat(auto-fit,minmax(160px,1fr))', gap:32, marginBottom:32 }}>
 
           {/* Brand column */}
           <div style={{ gridColumn:'span 1' }}>
@@ -65,9 +65,9 @@ const Footer = ({ variant = 'app' }) => {
             <div style={{ display:'flex', gap:8, marginTop:16 }}>
               {SOCIALS.map(({ label, href, Icon, hoverColor }) => (
                 <a key={label} href={href} target="_blank" rel="noopener noreferrer" title={label}
-                  style={{ width:36, height:36, borderRadius:'var(--r-md)', background:'var(--s2)', border:'1px solid var(--border)', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--t2)', textDecoration:'none', transition:'all .15s', flexShrink:0 }}
-                  onMouseEnter={e => { e.currentTarget.style.background='var(--s3)'; e.currentTarget.style.borderColor='var(--border2)'; e.currentTarget.style.color=hoverColor; }}
-                  onMouseLeave={e => { e.currentTarget.style.background='var(--s2)'; e.currentTarget.style.borderColor='var(--border)'; e.currentTarget.style.color='var(--t2)'; }}>
+                  style={{ width:34, height:34, background:'var(--s1)', border:'1px solid rgba(255,255,255,.07)', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--t2)', textDecoration:'none', transition:'all .15s', flexShrink:0 }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor='var(--volt)'; e.currentTarget.style.color=hoverColor; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,.07)'; e.currentTarget.style.color='var(--t2)'; }}>
                   <Icon/>
                 </a>
               ))}
@@ -124,7 +124,7 @@ const Footer = ({ variant = 'app' }) => {
         </div>
 
         {/* Bottom bar */}
-        <div style={{ borderTop:'1px solid var(--border)', paddingTop:20, display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:12 }}>
+        <div style={{ borderTop:'1px solid rgba(255,255,255,.07)', paddingTop:22, display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:12 }}>
           <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:11, letterSpacing:'.06em', textTransform:'uppercase', color:'var(--t3)' }}>
             © {new Date().getFullYear()} MPower Fitness
           </span>

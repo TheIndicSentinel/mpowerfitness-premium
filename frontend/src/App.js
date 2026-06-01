@@ -61,6 +61,7 @@ const BecomeTrainerPage = lazy(() => import('./pages/info/InfoPages').then(m => 
 const BlogPage          = lazy(() => import('./pages/info/InfoPages').then(m => ({ default: m.BlogPage })));
 const CareersPage       = lazy(() => import('./pages/info/InfoPages').then(m => ({ default: m.CareersPage })));
 const CookiePage        = lazy(() => import('./pages/info/InfoPages').then(m => ({ default: m.CookiePage })));
+const ProgramPage       = lazy(() => import('./pages/info/ProgramPage'));
 
 const UserLayout    = lazy(() => import('./components/layouts/UserLayout'));
 const TrainerLayout = lazy(() => import('./components/layouts/TrainerLayout'));
@@ -198,6 +199,7 @@ function App() {
           <Route path="/info/blog"           element={<BlogPage/>}/>
           <Route path="/info/careers"        element={<CareersPage/>}/>
           <Route path="/info/cookies"        element={<CookiePage/>}/>
+          <Route path="/programs/:slug"      element={<ProgramPage/>}/>
 
           <Route path="*" element={<Navigate to="/" replace/>}/>
         </Routes>

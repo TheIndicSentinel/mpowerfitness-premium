@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { LogoFull } from '../../components/shared/Logo';
 import Footer from '../../components/shared/Footer';
@@ -6,21 +6,42 @@ import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 const InfoLayout = ({ title, description, children }) => {
   useDocumentTitle(title, description);
+  const [scrolled, setScrolled]     = useState(false);
+  const [navVisible, setNavVisible] = useState(true);
+  const lastY = useRef(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 40);
+      if (y <= 10)                    setNavVisible(true);
+      else if (y > lastY.current + 6) setNavVisible(false);
+      else if (y < lastY.current - 6) setNavVisible(true);
+      lastY.current = y;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
     <div style={{ minHeight:'100vh', background:'var(--black)', display:'flex', flexDirection:'column' }}>
-      <header style={{ backdropFilter:'blur(18px)', background:'rgba(8,9,11,.85)', borderBottom:'1px solid rgba(255,255,255,.07)', padding:'0 clamp(16px,4vw,40px)', height:76, display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, zIndex:100 }}>
-        {/* Blueprint logo mark */}
-        <Link to="/" style={{ display:'flex', alignItems:'center', gap:13, textDecoration:'none' }}>
-          <div style={{ width:38, height:38, display:'grid', placeItems:'center', border:'1.5px solid var(--volt)', fontFamily:"'Anton',sans-serif", fontSize:19, color:'var(--volt)', clipPath:'polygon(0 0,100% 0,100% 100%,7px 100%,0 calc(100% - 7px))' }}>M</div>
-          <div>
-            <b style={{ display:'block', fontFamily:"'Archivo',sans-serif", fontWeight:900, fontSize:15, letterSpacing:'.02em', lineHeight:1, textTransform:'uppercase', color:'var(--t1)' }}>MPower Fitness</b>
-            <span style={{ display:'block', fontFamily:"'JetBrains Mono',monospace", fontSize:7.5, letterSpacing:'.22em', color:'var(--t3)', marginTop:2 }}>PERFORMANCE SYSTEMS</span>
-          </div>
-        </Link>
+      <header style={{
+        position:'fixed', top:0, left:0, right:0, zIndex:100,
+        backdropFilter:'blur(18px)',
+        background: scrolled ? 'rgba(8,9,11,.96)' : 'rgba(8,9,11,.85)',
+        borderBottom:'1px solid rgba(255,255,255,.07)',
+        padding:'0 clamp(16px,4vw,40px)', height:76,
+        display:'flex', alignItems:'center', justifyContent:'space-between',
+        transform: navVisible ? 'translateY(0)' : 'translateY(-100%)',
+        transition:'transform .35s ease, background .3s',
+      }}>
+        <LogoFull height={36} linkTo="/"/>
         <div style={{ display:'flex', gap:12 }}>
           <Link to="/login" className="btn btn-primary btn-sm" style={{ fontSize:11, padding:'8px 16px' }}>Log in</Link>
         </div>
       </header>
+      {/* Spacer for fixed header */}
+      <div style={{ height:76, flexShrink:0 }}/>
       <main style={{ flex:1, padding:'clamp(32px,5vw,64px) clamp(16px,4vw,40px)', maxWidth:960, margin:'0 auto', width:'100%' }}>
         {children}
       </main>

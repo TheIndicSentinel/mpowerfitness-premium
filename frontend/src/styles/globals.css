@@ -172,14 +172,15 @@ button, input, select, textarea { font-family: var(--font-body); }
 .form-group { display: flex; flex-direction: column; gap: 5px; }
 
 .form-label {
-  font-size: 11px; font-weight: 600; color: var(--t2);
-  letter-spacing: .07em; text-transform: uppercase;
+  font-family: var(--font-mono);
+  font-size: 10.5px; font-weight: 500; color: var(--t3);
+  letter-spacing: .14em; text-transform: uppercase;
 }
 
 .form-input {
   background: var(--s2); border: 1px solid var(--border);
-  border-radius: var(--r-md); padding: 11px 14px;
-  font-size: 14px; color: var(--t1); width: 100%;
+  padding: 11px 14px;
+  font-family: var(--font-body); font-size: 14px; color: var(--t1); width: 100%;
   transition: border-color .15s, background .15s, box-shadow .15s;
   outline: none;
 }
@@ -192,7 +193,7 @@ textarea.form-input { resize: vertical; min-height: 80px; }
 
 .form-select {
   background: var(--s2); border: 1px solid var(--border);
-  border-radius: var(--r-md); padding: 11px 36px 11px 14px;
+  padding: 11px 36px 11px 14px;
   font-size: 14px; color: var(--t1); width: 100%;
   outline: none; cursor: pointer;
   transition: border-color .15s, box-shadow .15s;
@@ -435,7 +436,7 @@ td { padding:12px 16px; font-size:14px; color:var(--t1); vertical-align:middle; 
 /* ================================================================
    ALIASES — compatibility shims for v2 components
    ================================================================ */
-.input { background:var(--s2); border:1px solid var(--border); border-radius:var(--r-md); padding:11px 14px; font-size:14px; color:var(--t1); width:100%; transition:border-color .15s,background .15s,box-shadow .15s; outline:none; font-family:var(--font-body); }
+.input { background:var(--s2); border:1px solid var(--border); padding:11px 14px; font-size:14px; color:var(--t1); width:100%; transition:border-color .15s,background .15s,box-shadow .15s; outline:none; font-family:var(--font-body); }
 .input::placeholder { color:var(--t3); }
 .input:focus { border-color:var(--lime); background:var(--s3); box-shadow:0 0 0 3px rgba(195,220,106,.08); }
 .input.error { border-color:var(--error); }
@@ -449,7 +450,7 @@ select.input:focus { border-color:var(--lime); box-shadow:0 0 0 3px rgba(195,220
 @media (max-width:768px)  { .stats-grid { grid-template-columns:repeat(2,1fr); } }
 
 /* Footer */
-.app-footer { background:var(--carbon); border-top:1px solid var(--border); padding:28px var(--page-pad); margin-top:auto; }
+.app-footer { background:#0e0f12; border-top:1px solid rgba(255,255,255,.07); padding:28px var(--page-pad); margin-top:auto; }
 
 /* Plan feature lock overlay */
 .feature-locked { position:relative; pointer-events:none; }

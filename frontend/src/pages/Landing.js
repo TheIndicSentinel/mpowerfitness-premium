@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, lazy, Suspense } from 'react';
+import React, { useCallback, useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { LogoFull } from '../components/shared/Logo';
 import Footer from '../components/shared/Footer';
@@ -15,6 +15,30 @@ const LINE3   = 'rgba(255,255,255,.12)';
 const BG      = '#08090b';
 const CHAR    = '#0e0f12';
 const S1      = '#16181d';
+
+/* ── Scroll-reveal wrapper ────────────────────────────────────── */
+const FadeIn = ({ children, delay = 0, style = {} }) => {
+  const ref = useRef(null);
+  const [vis, setVis] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setVis(true); obs.disconnect(); } },
+      { threshold: 0.08 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return (
+    <div ref={ref} style={{
+      opacity: vis ? 1 : 0,
+      transform: vis ? 'none' : 'translateY(22px)',
+      transition: `opacity .65s ease ${delay}ms, transform .65s ease ${delay}ms`,
+      ...style,
+    }}>{children}</div>
+  );
+};
 
 /* ── Blueprint grid backdrop ──────────────────────────────────── */
 const GridBg = ({ style = {} }) => (
@@ -171,19 +195,19 @@ const HeroRight = () => {
       {/* Scrim overlays */}
       <div style={{ position:'absolute', inset:0, zIndex:2, pointerEvents:'none', background:`linear-gradient(180deg,rgba(8,9,11,.35) 0%,transparent 30%,transparent 60%,rgba(8,9,11,.55) 100%),linear-gradient(90deg,rgba(8,9,11,.5),transparent 22%)` }}/>
 
-      {/* Corner brackets */}
-      <div style={{ position:'absolute', top:20, left:20, width:28, height:28, border:`2px solid ${VOLT}`, borderRight:0, borderBottom:0, zIndex:4 }}/>
-      <div style={{ position:'absolute', bottom:20, right:20, width:28, height:28, border:`2px solid ${VOLT}`, borderLeft:0, borderTop:0, zIndex:4 }}/>
+      {/* Corner brackets — sit exactly on the panel edges */}
+      <div style={{ position:'absolute', top:0, left:0, width:32, height:32, border:`2px solid ${VOLT}`, borderRight:0, borderBottom:0, zIndex:4 }}/>
+      <div style={{ position:'absolute', bottom:0, right:0, width:32, height:32, border:`2px solid ${VOLT}`, borderLeft:0, borderTop:0, zIndex:4 }}/>
 
-      {/* Progress dots (top-left, inside bracket) */}
-      <div style={{ position:'absolute', top:28, left:24, zIndex:5, display:'flex', gap:7 }}>
+      {/* Progress dots (inset from TL bracket with clear spacing) */}
+      <div style={{ position:'absolute', top:18, left:50, zIndex:5, display:'flex', gap:7 }}>
         {[0,1,2,3].map(i => (
           <div key={i} style={{ width:22, height:3, background: i === slide ? VOLT : 'rgba(255,255,255,.22)', transition:'background .3s' }}/>
         ))}
       </div>
 
-      {/* Float card (top-right, inside bracket) */}
-      <div style={{ position:'absolute', top:28, right:24, zIndex:5, background:'rgba(14,15,18,.72)', backdropFilter:'blur(14px)', border:`1px solid ${LINE}`, padding:'16px 18px', minWidth:168, boxShadow:'0 20px 50px -20px rgba(0,0,0,.7)' }}>
+      {/* Float card (top-right, inset from bracket) */}
+      <div style={{ position:'absolute', top:18, right:18, zIndex:5, background:'rgba(14,15,18,.72)', backdropFilter:'blur(14px)', border:`1px solid ${LINE}`, padding:'16px 18px', minWidth:168, boxShadow:'0 20px 50px -20px rgba(0,0,0,.7)' }}>
         <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:9, letterSpacing:'.16em', textTransform:'uppercase', color:'#9b9da4' }}>Output index</div>
         <div style={{ fontFamily:"'Anton',sans-serif", fontSize:30, color:VOLT, marginTop:5, lineHeight:1 }}>+35%</div>
         <div style={{ height:5, background:'rgba(255,255,255,.08)', marginTop:12, position:'relative', overflow:'hidden' }}>
@@ -215,6 +239,8 @@ const Landing = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showConsult, setShowConsult] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [navVisible, setNavVisible] = useState(true);
+  const lastScrollY = useRef(0);
   const [email, setEmail] = useState('');
   const { user: authUser, isAuthenticated } = useAuthStore();
   const [browserConsultDone, setBrowserConsultDone] = useState(() => {
@@ -226,7 +252,18 @@ const Landing = () => {
   };
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 40);
+      if (y <= 10) {
+        setNavVisible(true);
+      } else if (y > lastScrollY.current + 6) {
+        setNavVisible(false);   // scrolling down → hide
+      } else if (y < lastScrollY.current - 6) {
+        setNavVisible(true);    // scrolling up  → show
+      }
+      lastScrollY.current = y;
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -235,12 +272,12 @@ const Landing = () => {
 
   /* ── Programs ──────────────────────────────── */
   const programs = [
-    { code:'P-01', ico:'🔥', name:'Fat-Loss Engine', desc:'High-output, sustainable fat loss built around food you\'ll actually eat. The protocol recalibrates every week against your real numbers.', stat:'-21 lbs', statLbl:'Avg / 12 weeks', tag:'Most deployed →', hot:true },
-    { code:'P-02', ico:'💪', name:'Strength Matrix', desc:'Progressive-overload programming with auto-regulated load — tracked rep by rep to build real, measurable strength.', stat:'+35%', statLbl:'Avg squat max', tag:'Deploy →', hot:false },
-    { code:'P-03', ico:'🌸', name:'Hormonal / PCOD', desc:'Condition-aware training and nutrition built with specialists for hormonal balance and sustainable results.', stat:'1:1', statLbl:'Specialist-led', tag:'Deploy →', hot:false },
-    { code:'P-04', ico:'🩺', name:'Metabolic Health', desc:'Safe, calibrated coaching for diabetes and thyroid that runs alongside your medical care.', stat:'24/7', statLbl:'Coach support', tag:'Deploy →', hot:false },
-    { code:'P-05', ico:'🌱', name:'Zero-to-One', desc:'Brand new to training? A beginner on-ramp engineered to remove all overwhelm and build the habit first.', stat:'0→1', statLbl:'Beginner path', tag:'Deploy →', hot:false },
-    { code:'P-06', ico:'🥗', name:'Nutrition Engine', desc:'Smart, flexible macro guidance — no crash diets, no banned foods. Built to fit the way you actually live.', stat:'92%', statLbl:'Adherence', tag:'Deploy →', hot:false },
+    { code:'P-01', slug:'fat-loss',  ico:'🔥', name:'Fat-Loss Engine',   desc:'High-output, sustainable fat loss built around food you\'ll actually eat. The protocol recalibrates every week against your real numbers.', stat:'-21 lbs', statLbl:'Avg / 12 weeks', tag:'Most popular', hot:true },
+    { code:'P-02', slug:'strength',  ico:'💪', name:'Strength Matrix',   desc:'Progressive-overload programming with auto-regulated load — tracked rep by rep to build real, measurable strength.', stat:'+35%', statLbl:'Avg squat max', tag:'Explore →', hot:false },
+    { code:'P-03', slug:'pcod',      ico:'🌸', name:'Hormonal / PCOD',   desc:'Condition-aware training and nutrition built with specialists for hormonal balance and sustainable results.', stat:'1:1', statLbl:'Specialist-led', tag:'Explore →', hot:false },
+    { code:'P-04', slug:'metabolic', ico:'🩺', name:'Metabolic Health',  desc:'Safe, calibrated coaching for diabetes and thyroid that runs alongside your medical care.', stat:'24/7', statLbl:'Coach support', tag:'Explore →', hot:false },
+    { code:'P-05', slug:'beginner',  ico:'🌱', name:'Zero-to-One',       desc:'Brand new to training? A beginner on-ramp engineered to remove all overwhelm and build the habit first.', stat:'0→1', statLbl:'Beginner path', tag:'Explore →', hot:false },
+    { code:'P-06', slug:'nutrition', ico:'🥗', name:'Nutrition Engine',  desc:'Smart, flexible macro guidance — no crash diets, no banned foods. Built to fit the way you actually live.', stat:'92%', statLbl:'Adherence', tag:'Explore →', hot:false },
   ];
 
   /* ── Reviews ───────────────────────────────── */
@@ -252,23 +289,22 @@ const Landing = () => {
     { init:'N', bg:VOLT, q:'"The analytics keep me <b>brutally honest.</b>"', name:'Neha T.' },
   ];
 
-  const navBg = scrolled ? 'rgba(8,9,11,.92)' : 'rgba(8,9,11,.75)';
+  const navBg = scrolled ? 'rgba(8,9,11,.96)' : 'rgba(8,9,11,.78)';
 
   return (
     <div style={{ background: BG, minHeight: '100vh', overflowX: 'hidden' }}>
 
-      {/* ── NAV ──────────────────────────────────────────────────── */}
-      <header style={{ position:'sticky', top:0, zIndex:60, background:navBg, backdropFilter:'blur(18px)', borderBottom:`1px solid ${LINE2}`, transition:'background .3s' }}>
+      {/* ── NAV — fixed, hides on scroll-down, reappears on scroll-up ── */}
+      <header style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 60,
+        background: navBg, backdropFilter: 'blur(18px)',
+        borderBottom: `1px solid ${LINE2}`,
+        transform: navVisible ? 'translateY(0)' : 'translateY(-100%)',
+        transition: 'transform .35s ease, background .3s',
+      }}>
         <nav style={{ ...wrap, display:'flex', alignItems:'center', justifyContent:'space-between', height:76 }}>
 
-          {/* Logo mark */}
-          <div style={{ display:'flex', alignItems:'center', gap:13 }}>
-            <div style={{ width:40, height:40, display:'grid', placeItems:'center', border:`1.5px solid ${VOLT}`, fontFamily:"'Anton',sans-serif", fontSize:21, color:VOLT, clipPath:'polygon(0 0,100% 0,100% 100%,8px 100%,0 calc(100% - 8px))' }}>M</div>
-            <div>
-              <b style={{ display:'block', fontFamily:"'Archivo',sans-serif", fontWeight:900, fontSize:16, letterSpacing:'.02em', lineHeight:1, textTransform:'uppercase', color:'#f3f4ef' }}>MPower Fitness</b>
-              <span style={{ display:'block', fontFamily:"'JetBrains Mono',monospace", fontSize:8, letterSpacing:'.22em', color:'#5f6168', marginTop:3 }}>PERFORMANCE SYSTEMS</span>
-            </div>
-          </div>
+          <LogoFull height={38}/>
 
           {/* Desktop links */}
           <div className="landing-nav-links" style={{ display:'flex', gap:34, fontFamily:"'JetBrains Mono',monospace", fontWeight:500, fontSize:13, letterSpacing:'.04em', color:'#9b9da4', textTransform:'uppercase' }}>
@@ -284,11 +320,12 @@ const Landing = () => {
               onMouseEnter={e=>e.currentTarget.style.color='#f3f4ef'} onMouseLeave={e=>e.currentTarget.style.color='#9b9da4'}>
               Log in
             </Link>
-            <button onClick={() => setShowConsult(true)} className="btn btn-primary" style={{ padding:'11px 20px', fontSize:12 }}>
+            <button onClick={() => setShowConsult(true)} className="btn btn-primary hide-mobile" style={{ padding:'11px 20px', fontSize:12 }}>
               Free Consultation
             </button>
             {/* Mobile hamburger */}
-            <button className="landing-hamburger" onClick={() => setMobileOpen(o => !o)} aria-label="Menu"
+            <button className="landing-hamburger" onClick={() => setMobileOpen(o => !o)}
+              aria-label="Menu" aria-expanded={mobileOpen}
               style={{ display:'none', background:'none', border:`1px solid ${LINE3}`, cursor:'pointer', color:'#9b9da4', padding:'6px 8px' }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                 <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
@@ -298,7 +335,7 @@ const Landing = () => {
         </nav>
 
         {mobileOpen && (
-          <div style={{ background:'rgba(8,9,11,.97)', borderTop:`1px solid ${LINE2}`, padding:'14px 32px 22px', display:'flex', flexDirection:'column', gap:2 }}>
+          <div style={{ background:'rgba(8,9,11,.97)', borderTop:`1px solid ${LINE2}`, padding:'14px 32px 22px', display:'flex', flexDirection:'column', gap:2, animation:'slideDown .22s ease' }}>
             {[['#method','Method'],['#programs','Programs'],['#proof','Proof'],['#pricing','Pricing']].map(([h,l]) => (
               <a key={h} href={h} className="landing-mobile-link" onClick={() => setMobileOpen(false)} style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:13, letterSpacing:'.08em', textTransform:'uppercase' }}>{l}</a>
             ))}
@@ -309,11 +346,14 @@ const Landing = () => {
         )}
       </header>
 
+      {/* Spacer — accounts for fixed header height */}
+      <div style={{ height: 76 }}/>
+
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section style={{ position:'relative', overflow:'hidden', borderBottom:`1px solid ${LINE2}` }}>
         <GridBg style={{ WebkitMaskImage:'radial-gradient(120% 100% at 28% 18%,#000 32%,transparent 76%)', maskImage:'radial-gradient(120% 100% at 28% 18%,#000 32%,transparent 76%)', opacity:.85 }}/>
         {/* Haze */}
-        <div style={{ position:'absolute', width:680, height:680, borderRadius:'50%', background:`radial-gradient(circle,rgba(195,220,106,.1),transparent 62%)`, top:-220, left:-120, pointerEvents:'none' }}/>
+        <div style={{ position:'absolute', width:680, height:680, borderRadius:'50%', background:`radial-gradient(circle,rgba(195,220,106,.1),transparent 62%)`, top:-220, left:-120, pointerEvents:'none', willChange:'transform' }}/>
         <Crosshair style={{ top:120, left:'6%' }}/>
         <Crosshair style={{ bottom:90, left:'40%' }}/>
 
@@ -386,6 +426,7 @@ const Landing = () => {
       {/* ── METHOD ───────────────────────────────────────────────── */}
       <section style={{ padding:'112px 0', position:'relative' }} id="method">
         <div style={wrap}>
+          <FadeIn>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', gap:30, marginBottom:62, flexWrap:'wrap' }}>
             <div style={{ maxWidth:680 }}>
               <Eyebrow>// The method</Eyebrow>
@@ -394,28 +435,32 @@ const Landing = () => {
                 <span style={{ color:'transparent', WebkitTextStroke:`1.2px #9b9da4` }}>Zero guesswork.</span>
               </h2>
             </div>
-            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, letterSpacing:'.16em', color:'#5f6168', textTransform:'uppercase', paddingBottom:8 }}>FIG.01 — OPERATING SYSTEM</div>
+            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, letterSpacing:'.16em', color:'#5f6168', textTransform:'uppercase', paddingBottom:8 }}>FIG.01 — HOW IT WORKS</div>
           </div>
 
+          </FadeIn>
+          <FadeIn delay={120}>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', border:`1px solid ${LINE2}`, background:CHAR }} className="steps-grid">
             {[
               { n:'01', h:'Diagnostic', p:'A precise intake on your goals, lifestyle, training history and any conditions — PCOD, thyroid, diabetes. Two minutes, fully calibrated.' },
               { n:'02', h:'Engineer', p:'We match you to a certified coach and generate a personalised protocol: training load, nutrition macros and recovery, all in one system.' },
               { n:'03', h:'Execute', p:'Train anywhere, log every set, and watch the protocol recalibrate against your real output week over week.' },
             ].map(({ n, h, p }, i) => (
-              <div key={n} style={{ padding:'38px 32px', borderRight: i < 2 ? `1px solid ${LINE2}` : 'none', position:'relative' }}>
+              <div key={n} className="step-cell" style={{ padding:'38px 32px', borderRight: i < 2 ? `1px solid ${LINE2}` : 'none', position:'relative' }}>
                 <div style={{ fontFamily:"'Anton',sans-serif", fontSize:60, color:'transparent', WebkitTextStroke:`1.2px ${LINE2}`, lineHeight:.8 }}>{n}</div>
                 <h3 style={{ fontFamily:"'Archivo',sans-serif", fontWeight:900, textTransform:'uppercase', fontSize:20, margin:'18px 0 10px', letterSpacing:'.01em' }}>{h}</h3>
                 <p style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12.5, lineHeight:1.6, color:'#9b9da4' }}>{p}</p>
               </div>
             ))}
           </div>
+          </FadeIn>
         </div>
       </section>
 
       {/* ── PROGRAMS ─────────────────────────────────────────────── */}
       <section style={{ paddingBottom:'112px' }} id="programs">
         <div style={wrap}>
+          <FadeIn>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', gap:30, marginBottom:62, flexWrap:'wrap' }}>
             <div style={{ maxWidth:680 }}>
               <Eyebrow>// Programs</Eyebrow>
@@ -424,13 +469,15 @@ const Landing = () => {
                 <span style={{ color:'transparent', WebkitTextStroke:`1.2px #9b9da4` }}>every objective.</span>
               </h2>
             </div>
-            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, letterSpacing:'.16em', color:'#5f6168', textTransform:'uppercase', paddingBottom:8 }}>FIG.02 — PROGRAM INDEX</div>
+            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, letterSpacing:'.16em', color:'#5f6168', textTransform:'uppercase', paddingBottom:8 }}>FIG.02 — ALL PROGRAMS</div>
           </div>
-
+          </FadeIn>
+          <FadeIn delay={100}>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16 }} className="pgrid">
-            {programs.map(({ code, ico, name, desc, stat, statLbl, tag, hot }) => (
-              <div key={code} className="pcard-bp" onClick={() => setShowConsult(true)}
-                style={{ border:`1px solid ${hot ? LINE : LINE2}`, background: hot ? `linear-gradient(180deg,rgba(195,220,106,.08),transparent 62%)` : CHAR, padding:28, display:'flex', flexDirection:'column', cursor:'pointer', transition:'.2s', position:'relative' }}
+            {programs.map(({ code, slug, ico, name, desc, stat, statLbl, tag, hot }) => (
+              <Link key={code} to={`/programs/${slug}`}
+                className="pcard-bp"
+                style={{ border:`1px solid ${hot ? LINE : LINE2}`, background: hot ? `linear-gradient(180deg,rgba(195,220,106,.08),transparent 62%)` : CHAR, padding:28, display:'flex', flexDirection:'column', cursor:'pointer', transition:'.2s', position:'relative', textDecoration:'none', color:'inherit' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = LINE; e.currentTarget.style.background = hot ? `linear-gradient(180deg,rgba(195,220,106,.1),transparent 62%)` : '#131419'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = hot ? LINE : LINE2; e.currentTarget.style.background = hot ? `linear-gradient(180deg,rgba(195,220,106,.08),transparent 62%)` : CHAR; e.currentTarget.style.transform = 'none'; }}>
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
@@ -446,9 +493,10 @@ const Landing = () => {
                   </div>
                   <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:11, letterSpacing:'.1em', textTransform:'uppercase', color:VOLT }}>{tag}</span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
+          </FadeIn>
         </div>
       </section>
 
@@ -463,10 +511,11 @@ const Landing = () => {
                 <span style={{ color:'transparent', WebkitTextStroke:`1.2px #9b9da4` }}>measured.</span>
               </h2>
             </div>
-            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, letterSpacing:'.16em', color:'#5f6168', textTransform:'uppercase', paddingBottom:8 }}>FIG.03 — FIELD DATA</div>
+            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, letterSpacing:'.16em', color:'#5f6168', textTransform:'uppercase', paddingBottom:8 }}>FIG.03 — CLIENT RESULTS</div>
           </div>
 
           {/* Before / After cards — Blueprint style */}
+          <FadeIn delay={100}>
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 }} className="ba-grid">
             {[
               {
@@ -524,6 +573,7 @@ const Landing = () => {
               </div>
             ))}
           </div>
+          </FadeIn>
         </div>
 
         {/* Review marquee */}
@@ -555,7 +605,7 @@ const Landing = () => {
                 <span style={{ color:'transparent', WebkitTextStroke:`1.2px #9b9da4` }}>protocol.</span>
               </h2>
             </div>
-            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, letterSpacing:'.16em', color:'#5f6168', textTransform:'uppercase', paddingBottom:8 }}>FIG.04 — PLAN MATRIX</div>
+            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, letterSpacing:'.16em', color:'#5f6168', textTransform:'uppercase', paddingBottom:8 }}>FIG.04 — SUBSCRIPTION PLANS</div>
           </div>
 
           <div style={{ border:`1px solid ${LINE3}`, background:CHAR, overflowX:'auto' }}>
@@ -625,12 +675,13 @@ const Landing = () => {
             Book a free consultation, run the 2-minute diagnostic, and get your first engineered protocol — free. No contracts. Cancel anytime.
           </p>
           <form onSubmit={e => { e.preventDefault(); setShowConsult(true); }}
+            className="gate-form"
             style={{ display:'flex', maxWidth:540, margin:'38px auto 0', border:`1.5px solid ${LINE3}`, background:'rgba(14,15,18,.6)', backdropFilter:'blur(8px)', transition:'.2s' }}
             onFocus={e => e.currentTarget.style.borderColor = VOLT}
             onBlur={e => e.currentTarget.style.borderColor = LINE3}>
             <input type="email" placeholder="your@email.com" value={email} onChange={e => setEmail(e.target.value)}
-              style={{ flex:1, background:'transparent', border:0, outline:0, color:'#f3f4ef', fontFamily:"'JetBrains Mono',monospace", fontSize:14, padding:'0 20px', letterSpacing:'.02em' }}/>
-            <button type="submit" className="btn btn-primary" style={{ clipPath:'none', borderRadius:0 }}>Free Consultation →</button>
+              style={{ flex:1, background:'transparent', border:0, outline:0, color:'#f3f4ef', fontFamily:"'JetBrains Mono',monospace", fontSize:14, padding:'0 20px', letterSpacing:'.02em', minWidth:0 }}/>
+            <button type="submit" className="btn btn-primary gate-submit" style={{ clipPath:'none', flexShrink:0 }}>Free Consultation →</button>
           </form>
           <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:11, letterSpacing:'.08em', color:'#5f6168', marginTop:18, textTransform:'uppercase' }}>
             7-day free trial · No card required
@@ -646,22 +697,52 @@ const Landing = () => {
         </Suspense>
       )}
 
-      {/* Blueprint marquee keyframes (local — globals.css marquee might conflict) */}
       <style>{`
-        @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+        @keyframes marquee  { from{transform:translateX(0)}  to{transform:translateX(-50%)} }
+        @keyframes pulse    { 0%,100%{opacity:1} 50%{opacity:.3} }
+        @keyframes slideDown{ from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:none} }
+
+        /* ── Nav: hide desktop links + show hamburger on mobile ── */
         @media(max-width:900px){
-          .hero-inner { grid-template-columns:1fr !important; }
-          .hero-left-bp { padding:56px 0 48px !important; }
-          .hero-right-bp { border-left:0 !important; border-top:1px solid rgba(255,255,255,.07) !important; min-height:420px !important; }
+          .landing-nav-links { display:none !important; }
+          .landing-hamburger { display:inline-flex !important; }
         }
-        @media(max-width:900px){ .landing-nav-links { display:none !important; } .landing-hamburger { display:inline-flex !important; } }
+
+        /* ── Hero: stack on mobile ──────────────────────────────── */
+        @media(max-width:900px){
+          .hero-inner     { grid-template-columns:1fr !important; }
+          .hero-left-bp   { padding:48px 0 36px !important; }
+          .hero-right-bp  { border-left:0 !important; border-top:1px solid rgba(255,255,255,.07) !important; min-height:360px !important; }
+        }
+
+        /* ── Method steps: borders on mobile stack ──────────────── */
         @media(max-width:760px){
           .steps-grid { grid-template-columns:1fr !important; }
-          .pgrid { grid-template-columns:1fr 1fr !important; }
-          .ba-grid { grid-template-columns:1fr !important; }
+          .step-cell  { border-right:none !important; border-bottom:1px solid rgba(255,255,255,.07) !important; }
+          .step-cell:last-child { border-bottom:none !important; }
         }
+
+        /* ── Programs grid ──────────────────────────────────────── */
+        @media(max-width:900px){ .pgrid { grid-template-columns:1fr 1fr !important; } }
         @media(max-width:520px){ .pgrid { grid-template-columns:1fr !important; } }
+
+        /* ── Before/after cards ─────────────────────────────────── */
+        @media(max-width:760px){ .ba-grid { grid-template-columns:1fr !important; } }
+
+        /* ── Gate CTA form: stack on narrow screens ─────────────── */
+        @media(max-width:600px){
+          .gate-form        { flex-direction:column !important; }
+          .gate-form input  { padding:16px 20px !important; width:100% !important; }
+          .gate-submit      { width:100% !important; justify-content:center !important; }
+        }
+
+        /* ── Footer consistent with page ────────────────────────── */
+        @media(max-width:600px){
+          .foot { grid-template-columns:1fr 1fr !important; }
+        }
+        @media(max-width:400px){
+          .foot { grid-template-columns:1fr !important; }
+        }
       `}</style>
     </div>
   );

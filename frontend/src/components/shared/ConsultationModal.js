@@ -56,31 +56,32 @@ const BUDGET_SEGMENTS = [
 ];
 
 const C = {
-  lime:   'var(--neon-lime)',
-  orange: 'var(--electric-orange)',
-  surf:   'var(--surface)',
-  surf2:  'var(--surface-2)',
-  border: 'var(--border)',
-  t1:     'var(--text-primary)',
-  t2:     'var(--text-secondary)',
-  t3:     'var(--text-muted)',
+  lime:   'var(--volt)',          /* #c3dc6a — matte volt */
+  orange: 'var(--amber)',         /* #e8743f — warm amber */
+  surf:   'var(--s1)',            /* card surface */
+  surf2:  'var(--s2)',            /* elevated surface */
+  border: 'var(--border)',        /* rgba(255,255,255,.07) */
+  t1:     'var(--t1)',
+  t2:     'var(--t2)',
+  t3:     'var(--t3)',
 };
 
 /* ── shared bits ─────────────────────────────────────────────── */
 const Chip = ({ selected, onClick, icon, label, sub }) => (
   <button type="button" onClick={onClick} style={{
-    padding: sub ? '12px 14px' : '8px 13px', borderRadius:12, cursor:'pointer',
-    transition:'all 0.16s', display:'inline-flex', alignItems:'center', gap:10,
+    padding: sub ? '12px 14px' : '8px 13px',
+    cursor:'pointer', transition:'all 0.16s',
+    display:'inline-flex', alignItems:'center', gap:10,
     fontSize:13, fontWeight:600, fontFamily:'var(--font-body)', textAlign:'left',
-    background: selected ? 'rgba(46,138,255,0.12)' : C.surf2,
-    border: `1.5px solid ${selected ? 'rgba(46,138,255,0.55)' : C.border}`,
+    background: selected ? 'rgba(195,220,106,0.1)' : C.surf2,
+    border: `1.5px solid ${selected ? 'rgba(195,220,106,0.5)' : C.border}`,
     color: selected ? C.lime : C.t2,
-    boxShadow: selected ? '0 0 0 1px rgba(46,138,255,0.25)' : 'none',
+    boxShadow: selected ? '0 0 0 1px rgba(195,220,106,0.2)' : 'none',
   }}>
     {icon && <span style={{ fontSize:18, lineHeight:1 }}>{icon}</span>}
     <span style={{ display:'flex', flexDirection:'column', gap:2 }}>
       <span>{label}</span>
-      {sub && <span style={{ fontSize:11, fontWeight:500, color: selected ? 'rgba(46,138,255,0.7)' : C.t3 }}>{sub}</span>}
+      {sub && <span style={{ fontSize:11, fontWeight:500, color: selected ? 'rgba(195,220,106,0.65)' : C.t3 }}>{sub}</span>}
     </span>
   </button>
 );
@@ -227,17 +228,18 @@ const ConsultationModal = ({ onClose }) => {
       backdropFilter:'blur(6px)',
     }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div style={{
-        background:C.surf, border:`1px solid ${C.border}`, borderRadius:20,
+        background:C.surf, border:`1px solid ${C.border}`,
         width:'100%', maxWidth:560, maxHeight:'92vh', overflow:'hidden',
-        display:'flex', flexDirection:'column', boxShadow:'0 24px 80px rgba(0,0,0,0.5)',
+        display:'flex', flexDirection:'column', boxShadow:'0 24px 80px rgba(0,0,0,0.65)',
       }}>
         {/* Header + progress */}
         <div style={{ padding:'16px 20px 0', flexShrink:0 }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
             <button onClick={back} aria-label="Back" style={{
-              background:'none', border:`1px solid ${C.border}`, borderRadius:'50%',
+              background:'none', border:`1px solid ${C.border}`,
               width:34, height:34, cursor:'pointer', color:C.t2, fontSize:16,
               display:'flex', alignItems:'center', justifyContent:'center',
+              fontFamily:'var(--font-mono)',
             }}>←</button>
             <div style={{ display:'flex', alignItems:'center', gap:8 }}>
               <span style={{ fontSize:12, fontWeight:700, color:C.t3, letterSpacing:'0.05em' }}>
@@ -247,11 +249,11 @@ const ConsultationModal = ({ onClose }) => {
                 background:'none', border:'none', cursor:'pointer', color:C.t3, fontSize:20, lineHeight:1, padding:4 }}>✕</button>
             </div>
           </div>
-          <div style={{ height:5, background:C.surf2, borderRadius:99, overflow:'hidden', marginBottom:4 }}>
+          <div style={{ height:3, background:C.surf2, overflow:'hidden', marginBottom:4 }}>
             <motion.div
               animate={{ width: `${((done ? total : step + 1) / total) * 100}%` }}
               transition={{ duration:0.4, ease:'easeOut' }}
-              style={{ height:'100%', borderRadius:99, background:`linear-gradient(90deg, ${C.lime}, ${C.orange})` }}
+              style={{ height:'100%', background:`linear-gradient(90deg, ${C.lime}, ${C.orange})` }}
             />
           </div>
         </div>
@@ -278,10 +280,10 @@ const ConsultationModal = ({ onClose }) => {
                         <button key={g.value} type="button"
                           onClick={() => { set({ primaryGoal: g.value }); setTimeout(() => go(1), 160); }}
                           style={{
-                            padding:'16px 14px', borderRadius:14, cursor:'pointer', textAlign:'left',
+                            padding:'16px 14px', cursor:'pointer', textAlign:'left',
                             transition:'all 0.16s', fontFamily:'var(--font-body)',
-                            background: form.primaryGoal === g.value ? 'rgba(46,138,255,0.12)' : C.surf2,
-                            border:`1.5px solid ${form.primaryGoal === g.value ? 'rgba(46,138,255,0.55)' : C.border}`,
+                            background: form.primaryGoal === g.value ? 'rgba(195,220,106,0.1)' : C.surf2,
+                            border:`1.5px solid ${form.primaryGoal === g.value ? 'rgba(195,220,106,0.5)' : C.border}`,
                           }}>
                           <div style={{ fontSize:26, marginBottom:8 }}>{g.icon}</div>
                           <div style={{ fontSize:14, fontWeight:700, color: form.primaryGoal === g.value ? C.lime : C.t1 }}>{g.value}</div>
@@ -350,8 +352,8 @@ const ConsultationModal = ({ onClose }) => {
                       </div>
                     </div>
                     {deltaKg > 0 && (
-                      <div style={{ marginTop:20, padding:'14px 16px', borderRadius:12,
-                        background:'rgba(91,168,255,0.08)', border:'1px solid rgba(91,168,255,0.2)' }}>
+                      <div style={{ marginTop:20, padding:'14px 16px',
+                        background:'rgba(195,220,106,0.07)', border:'1px solid rgba(195,220,106,0.2)' }}>
                         <span style={{ fontSize:13, color:C.t2 }}>You want to {losing ? 'lose' : 'gain'} </span>
                         <span style={{ fontSize:15, fontWeight:800, color:C.orange }}>{Math.round(deltaKg * 10) / 10} kg</span>
                         <span style={{ fontSize:13, color:C.t2 }}> in {form.timeframeMonths} months —
@@ -444,8 +446,8 @@ const ConsultationModal = ({ onClose }) => {
                         ))}
                       </div>
                     </div>
-                    <div style={{ marginTop:16, padding:'10px 12px', background:'rgba(46,138,255,0.05)',
-                      border:'1px solid rgba(46,138,255,0.12)', borderRadius:10,
+                    <div style={{ marginTop:16, padding:'10px 12px', background:'rgba(195,220,106,0.04)',
+                      border:'1px solid rgba(195,220,106,0.12)',
                       fontSize:12, color:C.t3, lineHeight:1.5 }}>
                       🔒 Your information is confidential and used only to personalise your consultation. Never shared with third parties.
                     </div>
@@ -512,19 +514,19 @@ const ProjectionView = ({ projection, last, losing, deltaKg, months }) => (
         <AreaChart data={projection} margin={{ top:10, right:12, left:-18, bottom:0 }}>
           <defs>
             <linearGradient id="projFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#5BA8FF" stopOpacity={0.35} />
-              <stop offset="100%" stopColor="#5BA8FF" stopOpacity={0} />
+              <stop offset="0%" stopColor="#c3dc6a" stopOpacity={0.35} />
+              <stop offset="100%" stopColor="#c3dc6a" stopOpacity={0} />
             </linearGradient>
           </defs>
           <XAxis dataKey="month" tick={{ fill:'var(--text-muted)', fontSize:11 }} axisLine={false} tickLine={false} />
           <YAxis tick={{ fill:'var(--text-muted)', fontSize:11 }} axisLine={false} tickLine={false}
             domain={['dataMin - 2', 'dataMax + 2']} width={40} />
           <Tooltip
-            contentStyle={{ background:'var(--surface-2)', border:'1px solid var(--border)', borderRadius:10, fontSize:12 }}
-            labelStyle={{ color:'var(--text-secondary)' }}
+            contentStyle={{ background:'var(--s2)', border:'1px solid rgba(255,255,255,.07)', fontSize:12 }}
+            labelStyle={{ color:'var(--t2)' }}
             formatter={(v) => [`${v} kg`, 'Weight']} />
-          <Area type="monotone" dataKey="weight" stroke="#5BA8FF" strokeWidth={3}
-            fill="url(#projFill)" dot={{ r:3, fill:'#5BA8FF' }} activeDot={{ r:5 }} />
+          <Area type="monotone" dataKey="weight" stroke="#c3dc6a" strokeWidth={2.5}
+            fill="url(#projFill)" dot={{ r:3, fill:'#c3dc6a' }} activeDot={{ r:5 }} />
           {last && <ReferenceDot x={last.month} y={last.weight} r={6} fill="var(--neon-lime)" stroke="var(--surface)" strokeWidth={2} />}
         </AreaChart>
       </ResponsiveContainer>
@@ -544,14 +546,14 @@ const SuccessView = ({ form, last, onClose }) => (
       Our certified health coach will review your profile and call / WhatsApp you within <strong style={{ color:C.t1 }}>24 hours</strong> with
       a personalised plan{last?.weight ? <> to reach <strong style={{ color:C.orange }}>{last.weight} kg</strong></> : ''}.
     </p>
-    <div style={{ background:'rgba(46,138,255,0.07)', border:'1px solid rgba(46,138,255,0.2)',
-      borderRadius:12, padding:'16px 18px', maxWidth:400, margin:'0 auto 22px', textAlign:'left' }}>
-      <div style={{ fontSize:12, color:C.t3, textTransform:'uppercase', letterSpacing:'0.07em', marginBottom:10, fontWeight:700 }}>
-        What happens next
+    <div style={{ background:'rgba(195,220,106,0.05)', border:'1px solid rgba(195,220,106,0.16)',
+      padding:'16px 18px', maxWidth:400, margin:'0 auto 22px', textAlign:'left' }}>
+      <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, color:C.t3, textTransform:'uppercase', letterSpacing:'0.14em', marginBottom:12, fontWeight:500 }}>
+        // What happens next
       </div>
       {['Expert reviews your goals & health profile','Personalised plan curated for you','Free call / WhatsApp within 24 hours'].map((s, i) => (
         <div key={i} style={{ display:'flex', gap:10, fontSize:13, color:C.t2, marginBottom:i < 2 ? 8 : 0, alignItems:'center' }}>
-          <span style={{ width:22, height:22, borderRadius:'50%', flexShrink:0, background:'rgba(46,138,255,0.15)',
+          <span style={{ width:22, height:22, flexShrink:0, background:'rgba(195,220,106,0.15)',
             color:C.lime, fontWeight:800, display:'flex', alignItems:'center', justifyContent:'center', fontSize:12 }}>{i+1}</span>
           {s}
         </div>
