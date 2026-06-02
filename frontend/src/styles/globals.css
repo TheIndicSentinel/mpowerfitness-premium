@@ -163,8 +163,8 @@ button, input, select, textarea { font-family: var(--font-body); }
 
 .btn-sm   { padding: 5px 13px; font-size: 11px; gap: 5px; clip-path: polygon(0 0,100% 0,100% 100%,7px 100%,0 calc(100% - 7px)); }
 .btn-lg   { padding: 13px 28px; font-size: 15px; }
-.btn-full { width: 100%; clip-path: none; }
-.btn-icon { padding: 8px; clip-path: none; }
+.btn-full { width: 100%; clip-path: none !important; }
+.btn-icon { padding: 8px; clip-path: none !important; }
 
 /* ================================================================
    FORMS
@@ -302,8 +302,8 @@ td { padding:12px 16px; font-size:14px; color:var(--t1); vertical-align:middle; 
    MODAL
    ================================================================ */
 .modal-overlay { position:fixed; inset:0; background:rgba(11,11,22,.82); backdrop-filter:blur(4px); z-index:1000; display:flex; align-items:center; justify-content:center; padding:16px; animation:fadeIn .18s ease; }
-.modal { background:var(--charcoal); border:1px solid var(--border); border-radius:var(--r-xl); width:100%; max-width:520px; max-height:92vh; overflow-y:auto; animation:slideUp .22s ease; }
-.modal-header { display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--charcoal); z-index:1; }
+.modal { background:var(--charcoal); border:1px solid var(--border); width:100%; max-width:520px; max-height:92vh; overflow-y:auto; animation:slideUp .22s ease; }
+.modal-header { display:flex; align-items:center; justify-content:space-between; padding:16px 22px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--charcoal); z-index:1; }
 .modal-body  { padding:22px; }
 .modal-footer { padding:14px 22px; border-top:1px solid var(--border); display:flex; gap:8px; justify-content:flex-end; }
 
@@ -411,7 +411,7 @@ td { padding:12px 16px; font-size:14px; color:var(--t1); vertical-align:middle; 
   .grid-stats { grid-template-columns:repeat(2,1fr); }
   .card,.stat-card { padding:16px; }
   .hide-md    { display:none !important; }
-  .modal      { max-width:100%; border-radius:var(--r-lg) var(--r-lg) 0 0; }
+  .modal      { max-width:100%; }
   .modal-overlay { align-items:flex-end; padding:0; }
   table       { min-width:480px; }
   .topbar     { padding:0 14px; }
@@ -1173,3 +1173,86 @@ img, video { max-width: 100%; }
     display: none !important;
   }
 }
+
+/* ================================================================
+   INFO / PUBLIC PAGES — comprehensive mobile responsive
+   ================================================================ */
+
+/* Info pages: stack grids on mobile */
+@media (max-width: 640px) {
+  /* InfoLayout main padding */
+  .info-main { padding: 24px 16px !important; }
+
+  /* About page grids */
+  .about-stats-grid   { grid-template-columns: repeat(2,1fr) !important; }
+  .about-story-grid   { grid-template-columns: 1fr !important; }
+  .about-values-grid  { grid-template-columns: 1fr !important; }
+
+  /* Blog/Careers/Help grids */
+  .info-card-grid     { grid-template-columns: 1fr !important; }
+
+  /* Contact form */
+  .contact-grid       { grid-template-columns: 1fr !important; }
+}
+
+/* Auth pages: shrink horizontal padding on small phones */
+@media (max-width: 400px) {
+  .auth-card          { padding: 28px 20px !important; }
+}
+
+/* ================================================================
+   PROGRAM PAGES — responsive fixes
+   ================================================================ */
+@media (max-width: 760px) {
+  .program-features-grid { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 560px) {
+  .program-results-grid  { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 380px) {
+  .program-results-grid  { grid-template-columns: 1fr !important; }
+}
+
+/* ================================================================
+   LANDING — additional mobile fixes
+   ================================================================ */
+@media (max-width: 600px) {
+  /* Pricing matrix: allow horizontal scroll on mobile */
+  .pricing-matrix-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* Hero headline font-size floor */
+  .hero-headline-text  { font-size: 52px !important; }
+  /* Gate section padding */
+  .gate-inner-wrap     { padding: 72px 0 !important; }
+}
+
+/* ================================================================
+   FOOTER — mobile stack
+   ================================================================ */
+@media (max-width: 760px) {
+  .foot { grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
+}
+@media (max-width: 400px) {
+  .foot { grid-template-columns: 1fr !important; }
+}
+
+/* ================================================================
+   GLOBAL FORM FIXES — ensure all full-width buttons are clickable
+   ================================================================ */
+/* Remove clip-path from full-width buttons so Chrome doesn't clip pointer events */
+.btn.btn-full,
+.btn[style*="width:100%"],
+.btn[style*="width: 100%"] {
+  clip-path: none !important;
+}
+
+/* Ensure form inputs have min height for touch targets */
+@media (hover: none) and (pointer: coarse) {
+  .form-input,
+  .input,
+  .form-select { min-height: 46px; }
+}
+
+/* ================================================================
+   SCROLLBAR — keep styled
+   ================================================================ */
+::-webkit-scrollbar-thumb:hover { background: #3a3e2d; }

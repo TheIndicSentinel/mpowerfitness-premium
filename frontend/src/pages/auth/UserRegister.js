@@ -48,9 +48,9 @@ const UserRegister = () => {
           <LogoFull height={55} />
         </div>
 
-        <div style={{ background:'linear-gradient(180deg,rgba(22,24,29,.7),rgba(14,15,18,.6))', border:'1px solid rgba(255,255,255,.07)', borderRadius:2, backdropFilter:'blur(8px)', padding:'36px 32px' }}>
-          <h1 style={{ fontSize:24, fontWeight:700, marginBottom:6, color:'var(--text-primary)' }}>Create account</h1>
-          <p style={{ color:'var(--text-secondary)', fontSize:14, marginBottom:28 }}>Start your transformation — it's free</p>
+        <div style={{ background:'linear-gradient(180deg,rgba(22,24,29,.75),rgba(14,15,18,.65))', border:'1px solid rgba(255,255,255,.07)', backdropFilter:'blur(12px)', padding:'36px 32px' }}>
+          <h1 style={{ fontFamily:"'Archivo',sans-serif", fontSize:22, fontWeight:900, marginBottom:6, color:'var(--t1)', letterSpacing:'-.01em' }}>Create account</h1>
+          <p style={{ fontFamily:"'JetBrains Mono',monospace", color:'var(--t2)', fontSize:12.5, letterSpacing:'.04em', marginBottom:28 }}>Start your transformation — it's free</p>
 
           <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:16 }}>
             <div className="form-group">
@@ -64,7 +64,7 @@ const UserRegister = () => {
                 value={form.email} onChange={e => setForm({...form, email:e.target.value})} required/>
             </div>
             <div className="form-group">
-              <label className="form-label">Phone <span style={{ color:'var(--text-muted)', fontWeight:400 }}>(optional)</span></label>
+              <label className="form-label">Phone <span style={{ color:'var(--t3)', fontWeight:400 }}>(optional)</span></label>
               <input className="form-input" type="tel" placeholder="+91 98765 43210"
                 value={form.phone} onChange={e => setForm({...form, phone:e.target.value})}/>
             </div>
@@ -77,7 +77,7 @@ const UserRegister = () => {
                   required style={{ paddingRight:46 }}/>
                 <button type="button" onClick={() => setShowPass(v => !v)} style={{
                   position:'absolute', right:13, top:'50%', transform:'translateY(-50%)',
-                  background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)',
+                  background:'none', border:'none', cursor:'pointer', color:'var(--t3)',
                   display:'flex', alignItems:'center', padding:2
                 }}><EyeIcon open={showPass}/></button>
               </div>
@@ -105,13 +105,13 @@ const UserRegister = () => {
             </button>
           </form>
 
-          <p style={{ textAlign:'center', color:'var(--text-secondary)', fontSize:14, marginTop:24 }}>
-            Already have an account? <Link to="/login" style={{ color:'var(--neon-lime)', fontWeight:600 }}>Sign in</Link>
+          <p style={{ textAlign:'center', color:'var(--t2)', fontSize:14, marginTop:24 }}>
+            Already have an account? <Link to="/login" style={{ color:'var(--volt)', fontWeight:600 }}>Sign in</Link>
           </p>
         </div>
 
         <p style={{ textAlign:'center', marginTop:20, fontSize:13 }}>
-          <Link to="/trainer/register" style={{ color:'var(--text-muted)' }}>Join as a trainer →</Link>
+          <Link to="/trainer/register" style={{ color:'var(--t3)' }}>Join as a trainer →</Link>
         </p>
       </div>
     </div>

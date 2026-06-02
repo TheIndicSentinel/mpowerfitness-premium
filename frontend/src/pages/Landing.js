@@ -651,9 +651,15 @@ const Landing = () => {
               <tfoot>
                 <tr>
                   <td style={{ ...tdBase, border:0 }}/>
-                  <td style={{ ...tdBase, border:0 }}><button className="btn btn-ghost btn-sm" style={{ fontSize:11, padding:'10px 16px' }}>Get started</button></td>
-                  <td style={{ ...tdBase, border:0, background:'rgba(195,220,106,.04)' }}><button className="btn btn-primary btn-sm" style={{ fontSize:11, padding:'10px 16px' }} onClick={() => setShowConsult(true)}>Free Consultation →</button></td>
-                  <td style={{ ...tdBase, border:0 }}><button className="btn btn-ghost btn-sm" style={{ fontSize:11, padding:'10px 16px' }}>Choose Elite</button></td>
+                  <td style={{ ...tdBase, border:0 }}>
+                    <button className="btn btn-ghost btn-sm" style={{ fontSize:11, padding:'10px 16px' }} onClick={() => setShowConsult(true)}>Free Consultation</button>
+                  </td>
+                  <td style={{ ...tdBase, border:0, background:'rgba(195,220,106,.04)' }}>
+                    <button className="btn btn-primary btn-sm" style={{ fontSize:11, padding:'10px 16px' }} onClick={() => setShowConsult(true)}>Free Consultation →</button>
+                  </td>
+                  <td style={{ ...tdBase, border:0 }}>
+                    <Link to="/register" className="btn btn-ghost btn-sm" style={{ fontSize:11, padding:'10px 16px', display:'inline-flex', textDecoration:'none' }}>Choose Elite →</Link>
+                  </td>
                 </tr>
               </tfoot>
             </table>

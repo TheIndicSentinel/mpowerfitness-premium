@@ -461,9 +461,9 @@ const ConsultationModal = ({ onClose }) => {
         {/* Footer CTA */}
         {!done && cur.key !== 'goal' && (
           <div style={{ padding:'14px 20px', borderTop:`1px solid ${C.border}`, flexShrink:0 }}>
-            <button onClick={next} className="btn btn-primary"
+            <button onClick={next} className="btn btn-primary btn-full"
               disabled={!cur.valid || submit.isPending}
-              style={{ width:'100%', height:50, fontSize:15, fontWeight:700 }}>
+              style={{ height:50, fontSize:15, fontWeight:700, clipPath:'none' }}>
               {submit.isPending ? 'Submitting…'
                 : step === total - 1 ? 'Claim My Free Consultation →'
                 : 'Continue →'}
@@ -559,7 +559,7 @@ const SuccessView = ({ form, last, onClose }) => (
         </div>
       ))}
     </div>
-    <button className="btn btn-primary" onClick={onClose} style={{ minWidth:200, height:48 }}>Done</button>
+    <button className="btn btn-primary" onClick={onClose} style={{ minWidth:200, height:48, clipPath:'polygon(0 0,100% 0,100% 100%,11px 100%,0 calc(100% - 11px))' }}>Done</button>
   </div>
 );
 

@@ -41,15 +41,15 @@ const TrainerRegister = () => {
       <div style={{ width:'100%', maxWidth:500, animation:'slideUp 0.45s ease forwards' }}>
         <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:12, marginBottom:32 }}>
           <LogoFull height={55} />
-          <span style={{ background:'rgba(232,116,63,0.1)', color:'var(--electric-orange)', border:'1px solid rgba(232,116,63,0.22)', borderRadius:6, padding:'3px 10px', fontSize:11, fontWeight:600, letterSpacing:'0.08em', textTransform:'uppercase' }}>Trainer Application</span>
+          <span style={{ background:'rgba(232,116,63,0.1)', color:'var(--amber)', border:'1px solid rgba(232,116,63,0.22)', borderRadius:0, padding:'3px 10px', fontSize:11, fontWeight:600, letterSpacing:'0.08em', textTransform:'uppercase' }}>Trainer Application</span>
         </div>
 
-        <div style={{ background:'linear-gradient(180deg,rgba(22,24,29,.7),rgba(14,15,18,.6))', border:'1px solid rgba(255,255,255,.07)', borderRadius:2, backdropFilter:'blur(8px)', padding:'36px 32px' }}>
+        <div style={{ background:'linear-gradient(180deg,rgba(22,24,29,.7),rgba(14,15,18,.6))', border:'1px solid rgba(255,255,255,.07)', borderRadius:0, backdropFilter:'blur(8px)', padding:'36px 32px' }}>
           {/* Step indicator */}
           <div style={{ display:'flex', gap:8, marginBottom:28 }}>
             {[1,2].map(n => (
-              <div key={n} style={{ flex:1, height:3, borderRadius:2, transition:'background 0.3s',
-                background: n <= step ? 'var(--electric-orange)' : 'var(--surface-3)' }}/>
+              <div key={n} style={{ flex:1, height:3, borderRadius:0, transition:'background 0.3s',
+                background: n <= step ? 'var(--amber)' : 'var(--surface-3)' }}/>
             ))}
           </div>
 
@@ -77,7 +77,7 @@ const TrainerRegister = () => {
                   <label className="form-label">Password</label>
                   <input className="form-input" type="password" placeholder="Min. 8 characters" value={form.password} onChange={e => setForm({...form, password:e.target.value})} required/>
                 </div>
-                <button type="submit" className="btn btn-full" style={{ height:46, background:'var(--electric-orange)', color:'#fff', border:'none', borderRadius:10, fontWeight:600, cursor:'pointer', fontSize:15 }}>
+                <button type="submit" className="btn btn-primary btn-full" style={{ height:46, fontSize:15, clipPath:'none', cursor:'pointer' }}>
                   Continue →
                 </button>
               </div>
@@ -89,10 +89,10 @@ const TrainerRegister = () => {
                   <div style={{ display:'flex', flexWrap:'wrap', gap:7, marginTop:6 }}>
                     {SPECIALIZATIONS.map(s => (
                       <button key={s} type="button" onClick={() => toggleSpec(s)} style={{
-                        padding:'6px 12px', borderRadius:6, border:'1px solid',
+                        padding:'6px 12px', borderRadius:0, border:'1px solid',
                         borderColor: form.specializations.includes(s) ? 'rgba(232,116,63,0.4)' : 'var(--border)',
                         background: form.specializations.includes(s) ? 'rgba(232,116,63,0.1)' : 'var(--surface-2)',
-                        color: form.specializations.includes(s) ? 'var(--electric-orange)' : 'var(--text-secondary)',
+                        color: form.specializations.includes(s) ? 'var(--amber)' : 'var(--text-secondary)',
                         fontSize:12, cursor:'pointer', fontFamily:'var(--font-body)', transition:'all 0.15s'
                       }}>{s.replace(/_/g,' ')}</button>
                     ))}
@@ -118,7 +118,7 @@ const TrainerRegister = () => {
                 </div>
                 <div style={{ display:'flex', gap:10 }}>
                   <button type="button" className="btn btn-ghost" onClick={() => setStep(1)} style={{ flex:'0 0 auto' }}>← Back</button>
-                  <button type="submit" className="btn btn-full" style={{ height:46, background:'var(--electric-orange)', color:'#fff', border:'none', borderRadius:10, fontWeight:600, cursor:'pointer', fontSize:15 }} disabled={isLoading}>
+                  <button type="submit" className="btn btn-primary btn-full" style={{ height:46, fontSize:15, clipPath:'none', cursor:'pointer' }} disabled={isLoading}>
                     {isLoading ? 'Submitting…' : 'Submit Application'}
                   </button>
                 </div>
@@ -127,7 +127,7 @@ const TrainerRegister = () => {
           </form>
         </div>
         <p style={{ textAlign:'center', color:'var(--text-muted)', fontSize:13, marginTop:20 }}>
-          Already approved? <Link to="/trainer/login" style={{ color:'var(--electric-orange)' }}>Sign in</Link>
+          Already approved? <Link to="/trainer/login" style={{ color:'var(--amber)' }}>Sign in</Link>
         </p>
       </div>
     </div>

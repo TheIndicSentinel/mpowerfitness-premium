@@ -232,7 +232,7 @@ const ProgramPage = () => {
         }}>{tagline}</p>
 
         {/* Stat highlight */}
-        <div style={{ display:'inline-flex', alignItems:'baseline', gap:8, border:`1px solid ${LINE}`, background:'rgba(195,220,106,.06)', padding:'16px 24px' }}>
+        <div style={{ display:'inline-flex', alignItems:'baseline', gap:8, border:`1px solid ${LINE}`, background:'rgba(195,220,106,.06)', padding:'16px 24px', flexWrap:'wrap' }}>
           <span style={{ fontFamily:"'Anton',sans-serif", fontSize:48, color:VOLT, lineHeight:1 }}>{stat.val}{stat.unit}</span>
           <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:11, letterSpacing:'.14em', textTransform:'uppercase', color:'#9b9da4' }}>{stat.label}</span>
         </div>
@@ -344,9 +344,15 @@ const ProgramPage = () => {
       )}
 
       <style>{`
-        @media(max-width:560px) {
+        /* ProgramPage responsive */
+        @media(max-width:640px) {
+          .results-grid { grid-template-columns: 1fr 1fr !important; }
+        }
+        @media(max-width:400px) {
           .results-grid { grid-template-columns: 1fr !important; }
         }
+        /* Feature grid already uses auto-fill, process steps full-width by default */
+        /* Other program links wrap naturally */
       `}</style>
     </InfoLayout>
   );

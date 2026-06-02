@@ -45,9 +45,9 @@ const UserLogin = () => {
           <LogoFull height={55} />
         </div>
 
-        <div style={{ background:'linear-gradient(180deg,rgba(22,24,29,.7),rgba(14,15,18,.6))', border:'1px solid rgba(255,255,255,.07)', padding:'36px 32px', backdropFilter:'blur(8px)', clipPath:'polygon(0 0,100% 0,100% 100%,18px 100%,0 calc(100% - 18px))' }}>
-          <h1 style={{ fontSize:24, fontWeight:700, marginBottom:6, color:'var(--text-primary)' }}>Welcome back</h1>
-          <p style={{ fontFamily:"'JetBrains Mono',monospace", color:'var(--t2)', fontSize:13, letterSpacing:'.04em', marginBottom:28 }}>Sign in to continue your fitness journey</p>
+        <div style={{ background:'linear-gradient(180deg,rgba(22,24,29,.75),rgba(14,15,18,.65))', border:'1px solid rgba(255,255,255,.07)', padding:'36px 32px', backdropFilter:'blur(12px)' }}>
+          <h1 style={{ fontFamily:"'Archivo',sans-serif", fontSize:22, fontWeight:900, marginBottom:6, color:'var(--t1)', letterSpacing:'-.01em' }}>Welcome back</h1>
+          <p style={{ fontFamily:"'JetBrains Mono',monospace", color:'var(--t2)', fontSize:12.5, letterSpacing:'.04em', marginBottom:28 }}>Sign in to continue your fitness journey</p>
 
           <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:18 }}>
             <div className="form-group">
@@ -86,14 +86,14 @@ const UserLogin = () => {
             </button>
           </form>
 
-          <p style={{ textAlign:'center', color:'var(--text-secondary)', fontSize:14, marginTop:24 }}>
-            No account? <Link to="/register" style={{ color:'var(--neon-lime)', fontWeight:600 }}>Sign up free</Link>
+          <p style={{ textAlign:'center', fontFamily:"'JetBrains Mono',monospace", color:'var(--t2)', fontSize:12.5, marginTop:24 }}>
+            No account? <Link to="/register" style={{ color:'var(--volt)', fontWeight:700, textDecoration:'none' }}>Sign up free</Link>
           </p>
         </div>
 
-        <div style={{ marginTop:20, display:'flex', justifyContent:'center', gap:28 }}>
-          <Link to="/trainer/login" style={{ color:'var(--text-muted)', fontSize:13 }}>Trainer login</Link>
-          <Link to="/admin/login" style={{ color:'var(--text-muted)', fontSize:13 }}>Admin login</Link>
+        <div style={{ marginTop:22, display:'flex', justifyContent:'center', gap:28 }}>
+          <Link to="/trainer/login" style={{ fontFamily:"'JetBrains Mono',monospace", color:'var(--t3)', fontSize:12, textDecoration:'none', letterSpacing:'.04em' }}>Trainer login</Link>
+          <Link to="/admin/login" style={{ fontFamily:"'JetBrains Mono',monospace", color:'var(--t3)', fontSize:12, textDecoration:'none', letterSpacing:'.04em' }}>Admin login</Link>
         </div>
       </div>
     </div>
