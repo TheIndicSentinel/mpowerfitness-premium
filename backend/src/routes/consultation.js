@@ -1,6 +1,7 @@
 const express = require('express');
 const router  = express.Router();
 const jwt     = require('jsonwebtoken');
+const { Op }  = require('sequelize');
 const { protect, authorize } = require('../middleware/auth');
 const { ConsultationRequest, Admin, Notification, User } = require('../models/index');
 const { emitNotification } = require('../utils/socketHandler');
@@ -31,6 +32,24 @@ router.post('/', optionalAuth, async (req, res) => {
     if (!name || !email || !primaryGoal) {
       return res.status(400).json({ success: false, message: 'Name, email and goal are required' });
     }
+
+    // ── Duplicate guard: block a second OPEN consultation for the same email.
+    //    Once a previous request is 'closed', the email may submit again.   ──
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const existing = await ConsultationRequest.findOne({
+      where: {
+        email: { [Op.like]: normalizedEmail },
+        status: { [Op.ne]: 'closed' },
+      },
+    });
+    if (existing) {
+      return res.status(409).json({
+        success: false,
+        code: 'ALREADY_SUBMITTED',
+        message: 'A consultation request with this email already exists. Our team will contact you shortly.',
+      });
+    }
+
     const cr = await ConsultationRequest.create({
       userId: req.user?.id || null,
       name, email, phone, age, gender,

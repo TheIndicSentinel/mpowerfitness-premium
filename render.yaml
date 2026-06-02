@@ -38,6 +38,13 @@ services:
     rootDirectory: frontend
     buildCommand: npm install && npm run build
     publishPath: ./build
+    # SPA rewrite — every path falls back to index.html so client-side routes
+    # (/login, /register, /programs/:slug, /admin/login …) resolve on refresh
+    # and on direct deep links instead of returning a 404.
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: REACT_APP_API_URL
         fromService:

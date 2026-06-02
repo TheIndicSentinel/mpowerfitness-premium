@@ -4,6 +4,17 @@ import useAuthStore from '../store/authStore';
 
 let socketInstance = null;
 
+/* Resolve the Socket.IO server URL the same way api.js resolves the API base:
+   env first, then localhost in dev, then same-origin when deployed. */
+const resolveSocketUrl = () => {
+  const env = (process.env.REACT_APP_SOCKET_URL || '').trim().replace(/\/$/, '');
+  if (env) return env;
+  const isBrowser = typeof window !== 'undefined';
+  const host = isBrowser ? window.location.hostname : 'localhost';
+  if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:5000';
+  return isBrowser ? window.location.origin : 'http://localhost:5000';
+};
+
 const useSocket = () => {
   const { accessToken, isAuthenticated } = useAuthStore();
   const socketRef = useRef(null);
@@ -14,7 +25,7 @@ const useSocket = () => {
     // Reuse existing connection
     if (!socketInstance || !socketInstance.connected) {
       socketInstance = io(
-        process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000',
+        resolveSocketUrl(),
         {
           auth: { token: accessToken },
           transports: ['websocket', 'polling'],

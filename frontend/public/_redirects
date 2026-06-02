@@ -1,0 +1,4 @@
+# SPA fallback — serve index.html for any path so React Router handles
+# client-side routes (/login, /programs/:slug, /admin/login, …) on refresh
+# and direct deep links. Render and Netlify both honour this file.
+/*    /index.html   200
