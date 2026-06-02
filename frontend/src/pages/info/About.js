@@ -35,7 +35,7 @@ const InfoLayout = ({ title, description, children }) => {
         transform: navVisible ? 'translateY(0)' : 'translateY(-100%)',
         transition:'transform .35s ease, background .3s',
       }}>
-        <LogoFull height={36} linkTo="/"/>
+        <LogoFull height={46} linkTo="/"/>
         <div style={{ display:'flex', gap:12 }}>
           <Link to="/login" className="btn btn-primary btn-sm" style={{ fontSize:11, padding:'8px 16px' }}>Log in</Link>
         </div>

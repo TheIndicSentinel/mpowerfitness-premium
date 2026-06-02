@@ -57,7 +57,7 @@ const Footer = ({ variant = 'app' }) => {
 
           {/* Brand column */}
           <div style={{ gridColumn:'span 1' }}>
-            <LogoFull height={32} linkTo={isLanding ? '/' : null}/>
+            <LogoFull height={48} linkTo={isLanding ? '/' : null}/>
             <p style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, color:'var(--t2)', marginTop:14, lineHeight:1.7, maxWidth:260 }}>
               Data-driven training, engineered like software. Personalised protocols, certified coaches and real-time analytics.
             </p>

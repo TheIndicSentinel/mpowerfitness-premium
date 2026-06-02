@@ -302,9 +302,9 @@ const Landing = () => {
         transform: navVisible ? 'translateY(0)' : 'translateY(-100%)',
         transition: 'transform .35s ease, background .3s',
       }}>
-        <nav style={{ ...wrap, display:'flex', alignItems:'center', justifyContent:'space-between', height:76 }}>
+        <nav style={{ ...wrap, display:'flex', alignItems:'center', justifyContent:'space-between', height:84 }}>
 
-          <LogoFull height={38}/>
+          <LogoFull height={52}/>
 
           {/* Desktop links */}
           <div className="landing-nav-links" style={{ display:'flex', gap:34, fontFamily:"'JetBrains Mono',monospace", fontWeight:500, fontSize:13, letterSpacing:'.04em', color:'#9b9da4', textTransform:'uppercase' }}>
@@ -347,7 +347,7 @@ const Landing = () => {
       </header>
 
       {/* Spacer — accounts for fixed header height */}
-      <div style={{ height: 76 }}/>
+      <div style={{ height: 84 }}/>
 
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section style={{ position:'relative', overflow:'hidden', borderBottom:`1px solid ${LINE2}` }}>

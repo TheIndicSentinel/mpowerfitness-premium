@@ -1,127 +1,116 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-/* ── Momentum palette (final) ─────────────────────────────────── */
-const LIME   = '#c8ee44';   /* M + P — both the same lime (solid variant) */
-const CREAM  = '#f3f1e8';   /* wordmark text */
-const ORANGE = '#e7642b';   /* accent bar + period */
+/* ──────────────────────────────────────────────────────────────────
+   MPower Fitness — Green badge logo
+   Faithful recreation of "MPower Fitness Logo - Green.html".
+   Reference proportions are keyed to an 88px badge; everything scales
+   off the `height` prop (= badge size) so the lockup stays pixel-true
+   at any size.
+   ────────────────────────────────────────────────────────────────── */
 
-/* ── MP Monogram ──────────────────────────────────────────────── */
-/* Upright Archivo 900. Both M and P are identical lime (solid).
-   Straight (non-skewed) orange accent bar at bottom-right.      */
-const MPMono = ({ size = 80, onLime = false }) => {
-  const col  = onLime ? '#14160f' : LIME;
-  const mpSz = size;
-  /* Bar proportions from design: width=34, height=11, right=-4, bottom=12
-     at font-size 186. Scale proportionally.                      */
-  const scale  = mpSz / 186;
-  const barW   = Math.round(34 * scale);
-  const barH   = Math.max(2, Math.round(11 * scale));
-  const barR   = Math.round(-4 * scale);
-  const barB   = Math.round(12 * scale);
+const GREEN   = '#c4f000';   /* MP letters + separators */
+const BADGE_BG = '#111410';  /* badge fill */
+const BADGE_BORDER = '#2a3318';
+const TAG_COLOR = '#7e8a52';  /* tagline words (lightened from #4a5230 for legibility on dark surfaces) */
+const FONT = "'Montserrat', system-ui, sans-serif";
 
-  return (
-    <div style={{ position: 'relative', display: 'inline-flex', flexShrink: 0 }}>
-      <span style={{
-        fontFamily: "'Archivo',system-ui,sans-serif",
-        fontWeight: 900,
-        fontSize: mpSz,
-        letterSpacing: '-.04em',
-        lineHeight: .82,
-        display: 'block',
-        userSelect: 'none',
-        color: col,
-      }}>
-        M<span style={{ marginLeft: '-.28em' }}>P</span>
-      </span>
-      {/* Straight orange accent bar */}
-      <span style={{
-        position: 'absolute',
-        right: barR,
-        bottom: barB,
-        width: barW,
-        height: barH,
-        background: ORANGE,
-        display: 'block',
-      }}/>
-    </div>
-  );
-};
+/* ── MP Badge ─────────────────────────────────────────────────────── */
+const MPBadge = ({ size = 88 }) => (
+  <div style={{
+    width: size,
+    height: size,
+    background: BADGE_BG,
+    borderRadius: Math.max(4, size * 0.102),
+    border: `${Math.max(1, size * 0.017)}px solid ${BADGE_BORDER}`,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+    boxShadow: 'inset 0 1px 0 rgba(196,240,0,0.06), 0 0 0 0.5px rgba(196,240,0,0.04)',
+  }}>
+    <div style={{
+      fontFamily: FONT,
+      fontWeight: 900,
+      fontSize: size * 0.5,
+      color: GREEN,
+      letterSpacing: '-0.068em',
+      lineHeight: 1,
+      marginTop: -(size * 0.011),
+      userSelect: 'none',
+    }}>MP</div>
+  </div>
+);
 
-/* ── Full horizontal lockup ───────────────────────────────────── */
-/* height prop = target visual height of the whole mark.
-   Scales: MP mark dominant, MPOWER. + FITNESS block fits within it. */
-export const LogoFull = ({ height = 50, linkTo = '/', style }) => {
-  const mpSz   = height * 1.22;            /* MP font-size → visual height ≈ height */
-  const wordSz = height * 0.82;            /* MPOWER. font-size */
-  const fitSz  = Math.max(7, height * 0.2);/* FITNESS spread font-size */
-  const gap    = height * 0.18;            /* horizontal gap between mark and text */
+/* ── Full lockup: badge + wordmark + tagline ──────────────────────── */
+export const LogoFull = ({ height = 50, linkTo = '/', showTagline = true, style }) => {
+  /* height === badge size (the dominant element) */
+  const badge   = height;
+  const gap     = height * 0.295;       /* badge ↔ text */
+  const brandSz = height * 0.432;       /* "Mpower" / "Fitness" */
+  const wordGap = height * 0.125;       /* space between words */
+  const blockGap = height * 0.102;      /* brand ↔ tagline */
+  const tagSz   = height * 0.119;       /* tagline word size — strict design ratio */
+  const tagline = showTagline;
 
   const logo = (
     <div
       role="img"
       aria-label="MPower Fitness"
-      style={{ display: 'inline-flex', alignItems: 'center', gap, flexShrink: 0, ...style }}
+      style={{ display: 'inline-flex', alignItems: 'center', gap, userSelect: 'none', ...style }}
     >
-      <MPMono size={mpSz}/>
+      <MPBadge size={badge}/>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: height * 0.07 }}>
-        {/* MPOWER. — upright, sets column width */}
-        <div style={{
-          fontFamily: "'Archivo',system-ui,sans-serif",
-          fontWeight: 800,
-          fontSize: wordSz,
-          lineHeight: .76,
-          letterSpacing: '-.02em',
-          color: CREAM,
-          whiteSpace: 'nowrap',
-        }}>
-          MPOWER<span style={{ color: ORANGE }}>.</span>
+      <div style={{ display: 'inline-flex', flexDirection: 'column', gap: blockGap, alignItems: 'flex-start' }}>
+        {/* Wordmark */}
+        <div style={{ fontFamily: FONT, lineHeight: 1, display: 'flex', alignItems: 'baseline', whiteSpace: 'nowrap' }}>
+          <span style={{ fontWeight: 800, fontSize: brandSz, color: '#ffffff', letterSpacing: '-0.013em' }}>Mpower</span>
+          <span style={{ display: 'inline-block', width: wordGap }}/>
+          <span style={{ fontWeight: 300, fontSize: brandSz, color: '#ffffff', letterSpacing: '0.013em' }}>Fitness</span>
         </div>
 
-        {/* FITNESS — upright, spreads letter-by-letter to match MPOWER. width */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          fontFamily: "'Archivo',system-ui,sans-serif",
-          fontWeight: 700,
-          fontSize: fitSz,
-          color: CREAM,
-          lineHeight: 1,
-        }}>
-          {'FITNESS'.split('').map((c, i) => <span key={i}>{c}</span>)}
-        </div>
+        {/* Tagline — stretches to match wordmark width */}
+        {tagline && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+            <span style={tagWordStyle(tagSz)}>Strength</span>
+            <span style={tagSepStyle(tagSz)}>|</span>
+            <span style={tagWordStyle(tagSz)}>Health</span>
+            <span style={tagSepStyle(tagSz)}>|</span>
+            <span style={tagWordStyle(tagSz)}>Nutrition</span>
+          </div>
+        )}
       </div>
     </div>
   );
 
   if (!linkTo) return logo;
   return (
-    <Link
-      to={linkTo}
-      style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}
-      aria-label="MPower Fitness"
-    >
+    <Link to={linkTo} style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }} aria-label="MPower Fitness">
       {logo}
     </Link>
   );
 };
 
-/* ── Icon-only mark ───────────────────────────────────────────── */
-/* Collapsed sidebar, app icon contexts. Square, no border-radius. */
-export const LogoIcon = ({ size = 40, onLime = false, style }) => (
-  <div style={{
-    width: size,
-    height: size,
-    background: onLime ? LIME : '#101310',
-    border: onLime ? 'none' : '1px solid rgba(200,238,68,.18)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-    ...style,
-  }}>
-    <MPMono size={size * 0.68} onLime={onLime}/>
+const tagWordStyle = (size) => ({
+  fontFamily: FONT,
+  fontSize: size,
+  fontWeight: 600,
+  letterSpacing: '0.08em',
+  color: TAG_COLOR,
+  textTransform: 'uppercase',
+});
+const tagSepStyle = (size) => ({
+  fontFamily: FONT,
+  fontSize: size * 0.95,
+  fontWeight: 300,
+  color: GREEN,
+  opacity: 0.7,
+});
+
+/* ── Icon-only mark — the MP badge (collapsed sidebar, app icon) ──── */
+export const LogoIcon = ({ size = 40, style }) => (
+  <div style={style}>
+    <MPBadge size={size}/>
   </div>
 );
 

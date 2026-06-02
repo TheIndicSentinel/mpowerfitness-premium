@@ -1,15 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <!-- Dark background -->
-  <rect width="32" height="32" fill="#0b0d0a"/>
-  <!-- MP text using bold Arial Black (similar weight to Archivo 900) -->
-  <text
-    x="1" y="23"
-    font-family="'Arial Black', 'Helvetica Neue', Arial, sans-serif"
-    font-weight="900"
-    font-size="19"
-    fill="#c8ee44"
-    letter-spacing="-1"
-  >MP</text>
-  <!-- Orange accent bar (straight, matches logo design) -->
-  <rect x="20" y="21" width="10" height="3" fill="#e7642b"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 88" width="88" height="88">
+  <!-- MP badge — green edition -->
+  <rect x="0.75" y="0.75" width="86.5" height="86.5" rx="9"
+        fill="#111410" stroke="#2a3318" stroke-width="1.5"/>
+  <!-- MP letters: Montserrat 900, green -->
+  <text x="44" y="44"
+        font-family="Montserrat, 'Arial Black', Arial, sans-serif"
+        font-weight="900" font-size="44"
+        fill="#c4f000"
+        text-anchor="middle" dominant-baseline="central"
+        letter-spacing="-3">MP</text>
 </svg>

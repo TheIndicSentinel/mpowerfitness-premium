@@ -131,7 +131,7 @@ const AppLayout = ({ SidebarComp, accent = '99,102,241' }) => {
             )}
             {/* Mobile: show logo. Desktop: show page title */}
             {isMobile ? (
-              <LogoFull height={28} linkTo={null}/>
+              <LogoFull height={30} linkTo={null} showTagline={false}/>
             ) : (
               <h1 style={{ fontSize:15, fontWeight:600, color:'var(--t1)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                 {title}

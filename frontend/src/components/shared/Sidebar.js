@@ -53,7 +53,7 @@ const SidebarShell = ({ collapsed, onToggle, accent, badge, badgeClass, userSub,
         ) : (
           <>
             <div style={{ overflow:'hidden', maxWidth:'100%' }}>
-              <LogoFull height={34} linkTo={null}/>
+              <LogoFull height={42} linkTo={null}/>
             </div>
             {badge && (
               <span className={`badge ${badgeClass}`} style={{ alignSelf:'flex-start', fontSize:9, letterSpacing:'.1em' }}>
