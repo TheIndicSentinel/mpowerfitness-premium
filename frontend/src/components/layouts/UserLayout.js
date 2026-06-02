@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { UserSidebar, TrainerSidebar, AdminSidebar } from '../shared/Sidebar';
+import { LogoFull } from '../shared/Logo';
 import NotificationBell from '../shared/NotificationBell';
 import useAuthStore from '../../store/authStore';
 import Footer from '../shared/Footer';
@@ -107,13 +108,13 @@ const AppLayout = ({ SidebarComp, accent = '99,102,241' }) => {
           padding:'0 16px 0 14px',
           position:'sticky', top:0, zIndex:100, flexShrink:0,
         }}>
-          {/* Left: hamburger (mobile) or collapse toggle (desktop) + title */}
-          <div style={{ display:'flex', alignItems:'center', gap:10, minWidth:0 }}>
+          {/* Left: hamburger (mobile) or collapse toggle + title (desktop) */}
+          <div style={{ display:'flex', alignItems:'center', gap:10, minWidth:0, flex:1 }}>
             {isMobile ? (
               <button
                 onClick={() => setMobileOpen(true)}
                 aria-label="Open menu"
-                style={{ background:'none', border:'none', cursor:'pointer', color:'var(--t2)', display:'flex', alignItems:'center', padding:6, borderRadius:6, flexShrink:0 }}
+                style={{ background:'none', border:'none', cursor:'pointer', color:'var(--t2)', display:'flex', alignItems:'center', padding:6, flexShrink:0 }}
               >
                 <MenuIcon/>
               </button>
@@ -121,16 +122,21 @@ const AppLayout = ({ SidebarComp, accent = '99,102,241' }) => {
               <button
                 onClick={() => setCollapsed(c => !c)}
                 aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-                style={{ background:'none', border:'none', cursor:'pointer', color:'var(--t3)', display:'flex', alignItems:'center', padding:6, borderRadius:6, flexShrink:0, transition:'color .15s' }}
+                style={{ background:'none', border:'none', cursor:'pointer', color:'var(--t3)', display:'flex', alignItems:'center', padding:6, flexShrink:0, transition:'color .15s' }}
                 onMouseEnter={e => e.currentTarget.style.color='var(--t2)'}
                 onMouseLeave={e => e.currentTarget.style.color='var(--t3)'}
               >
                 <CollapseIcon collapsed={collapsed}/>
               </button>
             )}
-            <h1 style={{ fontSize:15, fontWeight:600, color:'var(--t1)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-              {title}
-            </h1>
+            {/* Mobile: show logo. Desktop: show page title */}
+            {isMobile ? (
+              <LogoFull height={28} linkTo={null}/>
+            ) : (
+              <h1 style={{ fontSize:15, fontWeight:600, color:'var(--t1)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                {title}
+              </h1>
+            )}
           </div>
 
           {/* Right: bell + avatar */}

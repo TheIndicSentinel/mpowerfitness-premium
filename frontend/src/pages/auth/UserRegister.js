@@ -55,23 +55,26 @@ const UserRegister = () => {
           <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:16 }}>
             <div className="form-group">
               <label className="form-label">Full name</label>
-              <input className="form-input" type="text" placeholder="Your name"
-                value={form.name} onChange={e => setForm({...form, name:e.target.value})} required/>
+              <input className="form-input" type="text" placeholder="Your name" autoFocus
+                value={form.name} onChange={e => setForm({...form, name:e.target.value})} required
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('reg-email')?.focus(); }}}/>
             </div>
             <div className="form-group">
               <label className="form-label">Email address</label>
-              <input className="form-input" type="email" placeholder="you@example.com"
-                value={form.email} onChange={e => setForm({...form, email:e.target.value})} required/>
+              <input id="reg-email" className="form-input" type="email" placeholder="you@example.com"
+                value={form.email} onChange={e => setForm({...form, email:e.target.value})} required
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('reg-phone')?.focus(); }}}/>
             </div>
             <div className="form-group">
               <label className="form-label">Phone <span style={{ color:'var(--t3)', fontWeight:400 }}>(optional)</span></label>
-              <input className="form-input" type="tel" placeholder="+91 98765 43210"
-                value={form.phone} onChange={e => setForm({...form, phone:e.target.value})}/>
+              <input id="reg-phone" className="form-input" type="tel" placeholder="+91 98765 43210"
+                value={form.phone} onChange={e => setForm({...form, phone:e.target.value})}
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('reg-password')?.focus(); }}}/>
             </div>
             <div className="form-group">
               <label className="form-label">Password</label>
               <div style={{ position:'relative' }}>
-                <input className="form-input" type={showPass ? 'text' : 'password'}
+                <input id="reg-password" className="form-input" type={showPass ? 'text' : 'password'}
                   placeholder="Min. 8 characters" value={form.password}
                   onChange={e => setForm({...form, password:e.target.value})}
                   required style={{ paddingRight:46 }}/>

@@ -54,13 +54,14 @@ const UserLogin = () => {
               <label className="form-label">Email address</label>
               <input className="form-input" type="email" placeholder="you@example.com"
                 value={form.email} onChange={e => setForm({...form, email:e.target.value})}
-                required autoComplete="email"/>
+                required autoComplete="email"
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('login-password')?.focus(); }}}/>
             </div>
 
             <div className="form-group">
               <label className="form-label">Password</label>
               <div style={{ position:'relative' }}>
-                <input className="form-input" type={showPass ? 'text' : 'password'}
+                <input id="login-password" className="form-input" type={showPass ? 'text' : 'password'}
                   placeholder="••••••••" value={form.password}
                   onChange={e => setForm({...form, password:e.target.value})}
                   required autoComplete="current-password" style={{ paddingRight:46 }}/>

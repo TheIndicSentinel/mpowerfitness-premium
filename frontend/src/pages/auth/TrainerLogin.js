@@ -48,11 +48,12 @@ const TrainerLogin = () => {
             <div className="form-group">
               <label className="form-label">Email address</label>
               <input className="form-input" type="email" placeholder="trainer@example.com"
-                value={form.email} onChange={e => setForm({...form, email:e.target.value})} required autoComplete="email"/>
+                value={form.email} onChange={e => setForm({...form, email:e.target.value})} required autoComplete="email"
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('tl-pass')?.focus(); }}}/>
             </div>
             <div className="form-group">
               <label className="form-label">Password</label>
-              <input className="form-input" type="password" placeholder="••••••••"
+              <input id="tl-pass" className="form-input" type="password" placeholder="••••••••"
                 value={form.password} onChange={e => setForm({...form, password:e.target.value})} required autoComplete="current-password"/>
             </div>
             <button type="submit" className="btn btn-primary btn-full" style={{ height:46, fontSize:14, clipPath:'none', marginTop:4 }} disabled={isLoading}>

@@ -107,7 +107,8 @@ const StepTitle = ({ children, sub }) => (
 /* ── validation helpers ─────────────────────────────────────── */
 const isEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((e || '').trim());
 const inRange = (v, lo, hi) => { const n = Number(v); return v !== '' && v != null && !Number.isNaN(n) && n >= lo && n <= hi; };
-export const CONSULT_DONE_KEY = 'mpower-consultation-done';
+export const CONSULT_DONE_KEY  = 'mpower-consultation-done';
+const        CONSULT_EMAIL_KEY = 'mpower-consult-email';
 
 /* ── projection math: decelerating (easeOut) curve to target ──── */
 const buildProjection = (current, target, months) => {
@@ -159,12 +160,21 @@ const ConsultationModal = ({ onClose }) => {
     mutationFn: (body) => api.post('/consultations', body),
     onSuccess: () => {
       setDone(true);
-      // Persist so the same browser never sees the CTA again (covers anonymous leads)
-      try { localStorage.setItem(CONSULT_DONE_KEY, '1'); } catch (_) { /* storage unavailable */ }
-      // Only touch the auth user object when actually logged in — avoid creating a phantom user
+      try {
+        localStorage.setItem(CONSULT_DONE_KEY, '1');
+        /* Store the submitted email so we can detect duplicate attempts */
+        localStorage.setItem(CONSULT_EMAIL_KEY, (form.email || '').trim().toLowerCase());
+      } catch (_) {}
       if (isAuthenticated) updateUser({ consultationDone: true });
     },
-    onError: (e) => toast.error(e.response?.data?.message || 'Failed to submit. Please try again.'),
+    onError: (e) => {
+      const msg = e.response?.data?.message || '';
+      if (msg.toLowerCase().includes('already') || e.response?.status === 409) {
+        toast.error('You have already booked a consultation with this email. Our team will contact you shortly.');
+      } else {
+        toast.error(msg || 'Failed to submit. Please try again.');
+      }
+    },
   });
 
   const toggleCondition = (val) => setForm(f => {
@@ -311,14 +321,16 @@ const ConsultationModal = ({ onClose }) => {
                     <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:12 }}>
                       <Field label="Age" suffix="yrs">
                         <input className="form-input" type="number" min="13" max="100" value={form.age}
-                          onChange={e => set({ age: e.target.value })} placeholder="28" />
+                          onChange={e => set({ age: e.target.value })} placeholder="28"
+                          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('inp-height')?.focus(); }}} />
                       </Field>
                       <Field label="Height" suffix="cm">
-                        <input className="form-input" type="number" min="120" max="230" value={form.heightCm}
-                          onChange={e => set({ heightCm: e.target.value })} placeholder="170" />
+                        <input id="inp-height" className="form-input" type="number" min="120" max="230" value={form.heightCm}
+                          onChange={e => set({ heightCm: e.target.value })} placeholder="170"
+                          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('inp-weight')?.focus(); }}} />
                       </Field>
                       <Field label="Weight" suffix="kg">
-                        <input className="form-input" type="number" min="30" max="250" value={form.currentWeight}
+                        <input id="inp-weight" className="form-input" type="number" min="30" max="250" value={form.currentWeight}
                           onChange={e => set({ currentWeight: e.target.value })} placeholder="82" />
                       </Field>
                     </div>
@@ -401,7 +413,13 @@ const ConsultationModal = ({ onClose }) => {
                 )}
 
                 {/* ───────────── STEP 6 — CONTACT ───────────── */}
-                {cur.key === 'contact' && (
+                {cur.key === 'contact' && (() => {
+                  /* Check if this email was already used for a consultation */
+                  let storedEmail = '';
+                  try { storedEmail = localStorage.getItem(CONSULT_EMAIL_KEY) || ''; } catch (_) {}
+                  const emailAlreadyUsed = storedEmail && isEmail(form.email) &&
+                    storedEmail === form.email.trim().toLowerCase();
+                  return (
                   <>
                     <StepTitle sub="Last step — our certified coach will call you within 24 hours. 100% free, no commitment.">
                       Where should we send your <span style={{ color:C.lime }}>plan</span>?
@@ -409,15 +427,22 @@ const ConsultationModal = ({ onClose }) => {
                     <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:16 }}>
                       <Field label="Name *">
                         <input className="form-input" value={form.name}
-                          onChange={e => set({ name:e.target.value })} placeholder="Your full name" />
+                          onChange={e => set({ name:e.target.value })} placeholder="Your full name"
+                          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.closest('form')?.querySelectorAll('input')[1]?.focus(); }}} />
                       </Field>
                       <Field label="Email *">
                         <input className="form-input" type="email" value={form.email}
                           onChange={e => set({ email:e.target.value })} placeholder="your@email.com"
-                          style={{ borderColor: form.email && !isEmail(form.email) ? 'var(--error)' : undefined }} />
+                          style={{ borderColor: (form.email && !isEmail(form.email)) || emailAlreadyUsed ? 'var(--error)' : undefined }}
+                          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.closest('form')?.querySelectorAll('input')[2]?.focus(); }}} />
                       </Field>
                     </div>
-                    {form.email && !isEmail(form.email) && (
+                    {emailAlreadyUsed && (
+                      <div style={{ fontSize:12, color:'var(--error)', marginTop:-8, marginBottom:8, fontFamily:"'JetBrains Mono',monospace", letterSpacing:'.04em' }}>
+                        ⚠ This email has already been used. Our team will contact you shortly.
+                      </div>
+                    )}
+                    {form.email && !isEmail(form.email) && !emailAlreadyUsed && (
                       <div style={{ fontSize:12, color:'var(--error)', marginTop:-8, marginBottom:8 }}>
                         Please enter a valid email address
                       </div>
@@ -452,7 +477,8 @@ const ConsultationModal = ({ onClose }) => {
                       🔒 Your information is confidential and used only to personalise your consultation. Never shared with third parties.
                     </div>
                   </>
-                )}
+                  );
+                })()}
               </motion.div>
             </AnimatePresence>
           )}
@@ -483,7 +509,7 @@ const BmiNote = ({ height, weight }) => {
   const cat = bmi < 18.5 ? ['Underweight', 'var(--info)']
     : bmi < 25 ? ['Healthy', 'var(--neon-lime)']
     : bmi < 30 ? ['Overweight', 'var(--warning)']
-    : ['Obese', 'var(--electric-orange)'];
+    : ['Obese', 'var(--amber)'];
   return (
     <div style={{ marginTop:14, fontSize:13, color:C.t2 }}>
       Your BMI is <strong style={{ color: cat[1] }}>{bmi.toFixed(1)}</strong>
