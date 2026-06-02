@@ -23,6 +23,24 @@ const optionalAuth = async (req, res, next) => {
   next();
 };
 
+// ── Check if email exists ──
+router.get('/check-email', async (req, res) => {
+  try {
+    const { email } = req.query;
+    if (!email) return res.json({ used: false });
+    
+    // Check if consultation request already exists
+    const cr = await ConsultationRequest.findOne({ where: { email } });
+    if (cr) return res.json({ used: true, message: 'You have already requested a consultation.' });
+    
+    // Check if already registered as a user
+    const user = await User.findOne({ where: { email } });
+    if (user) return res.json({ used: true, message: 'An account with this email already exists. Please log in.' });
+
+    res.json({ used: false });
+  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
 // ── Submit free consultation (public or authenticated) ──
 router.post('/', optionalAuth, async (req, res) => {
   try {

@@ -44,15 +44,15 @@ const ACTIVITY_LEVELS = [
 const DELIVERY_MODES = [
   { value:'online_video',    label:'Online Video Sessions', icon:'💻' },
   { value:'trainer_at_home', label:'Trainer at My Home',    icon:'🏠' },
-  { value:'mpower_gym',      label:'At MPower Gym',          icon:'🏋️' },
+  { value:'mpower_gym',      label:'At MPower Centre',      icon:'🏋️' },
   { value:'partner_gym',     label:'At My Existing Gym',     icon:'📍' },
   { value:'self_guided',     label:'Self-Guided Online',     icon:'💻' },
 ];
 
 const BUDGET_SEGMENTS = [
-  { value:'budget',  label:'₹499 – 999/mo',   icon:'🟢' },
-  { value:'mid',     label:'₹1,499 – 2,999/mo',icon:'🔵' },
-  { value:'premium', label:'₹2,999+/mo',       icon:'🟣' },
+  { value:'budget',  label:'₹499 – 799 / session',   sub:'L1 Coach', icon:'🟢' },
+  { value:'mid',     label:'₹800 – 1,499 / session', sub:'L2 Coach', icon:'🔵' },
+  { value:'premium', label:'₹1,500+ / session',      sub:'L3 Master',icon:'🟣' },
 ];
 
 const C = {
@@ -135,6 +135,7 @@ const ConsultationModal = ({ onClose }) => {
   const [step, setStep] = useState(0);
   const [dir, setDir] = useState(1);
   const [done, setDone] = useState(false);
+  const [emailCheck, setEmailCheck] = useState({ checking: false, used: false, message: '' });
 
   const [form, setForm] = useState({
     name: user?.name || '',
@@ -177,6 +178,23 @@ const ConsultationModal = ({ onClose }) => {
     },
   });
 
+  React.useEffect(() => {
+    if (!form.email || !isEmail(form.email)) {
+      setEmailCheck({ checking: false, used: false, message: '' });
+      return;
+    }
+    const timer = setTimeout(async () => {
+      setEmailCheck(prev => ({ ...prev, checking: true }));
+      try {
+        const res = await api.get(`/consultations/check-email?email=${encodeURIComponent(form.email)}`);
+        setEmailCheck({ checking: false, used: res.data.used, message: res.data.message || '' });
+      } catch (err) {
+        setEmailCheck({ checking: false, used: false, message: '' });
+      }
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [form.email]);
+
   const toggleCondition = (val) => setForm(f => {
     const cur = f.healthConditions;
     if (val === 'none') return { ...f, healthConditions: cur.includes('none') ? [] : ['none'] };
@@ -199,7 +217,7 @@ const ConsultationModal = ({ onClose }) => {
     { key:'target',     valid: inRange(form.targetWeight, 30, 250) },
     { key:'projection', valid: true },
     { key:'health',     valid: !!form.activityLevel },
-    { key:'contact',    valid: form.name.trim().length >= 2 && isEmail(form.email) },
+    { key:'contact',    valid: form.name.trim().length >= 2 && isEmail(form.email) && !emailCheck.used },
   ];
   const total = steps.length;
   const cur = steps[step];
@@ -356,11 +374,11 @@ const ConsultationModal = ({ onClose }) => {
                         <label className="form-label" style={{ margin:0 }}>Timeline</label>
                         <span style={{ fontSize:15, fontWeight:800, color:C.lime }}>{form.timeframeMonths} months</span>
                       </div>
-                      <input type="range" min="2" max="12" step="1" value={form.timeframeMonths}
+                      <input type="range" min="3" max="12" step="1" value={form.timeframeMonths}
                         onChange={e => set({ timeframeMonths: Number(e.target.value) })}
                         style={{ width:'100%', accentColor:'var(--neon-lime)', cursor:'pointer' }} />
                       <div style={{ display:'flex', justifyContent:'space-between', fontSize:11, color:C.t3, marginTop:4 }}>
-                        <span>2 mo</span><span>12 mo</span>
+                        <span>3 mo</span><span>12 mo</span>
                       </div>
                     </div>
                     {deltaKg > 0 && (
@@ -422,7 +440,7 @@ const ConsultationModal = ({ onClose }) => {
                   return (
                   <>
                     <StepTitle sub="Last step — our certified coach will call you within 24 hours. 100% free, no commitment.">
-                      Where should we send your <span style={{ color:C.lime }}>plan</span>?
+                      How can we reach <span style={{ color:C.lime }}>you</span>?
                     </StepTitle>
                     <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:16 }}>
                       <Field label="Name *">
@@ -433,13 +451,18 @@ const ConsultationModal = ({ onClose }) => {
                       <Field label="Email *">
                         <input className="form-input" type="email" value={form.email}
                           onChange={e => set({ email:e.target.value })} placeholder="your@email.com"
-                          style={{ borderColor: (form.email && !isEmail(form.email)) || emailAlreadyUsed ? 'var(--error)' : undefined }}
+                          style={{ borderColor: (form.email && !isEmail(form.email)) || emailAlreadyUsed || emailCheck.used ? 'var(--error)' : undefined }}
                           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.closest('form')?.querySelectorAll('input')[2]?.focus(); }}} />
                       </Field>
                     </div>
                     {emailAlreadyUsed && (
                       <div style={{ fontSize:12, color:'var(--error)', marginTop:-8, marginBottom:8, fontFamily:"'JetBrains Mono',monospace", letterSpacing:'.04em' }}>
                         ⚠ This email has already been used. Our team will contact you shortly.
+                      </div>
+                    )}
+                    {emailCheck.used && !emailAlreadyUsed && (
+                      <div style={{ fontSize:12, color:'var(--warning)', marginTop:-8, marginBottom:8 }}>
+                        {emailCheck.message || 'This email is already registered.'}
                       </div>
                     )}
                     {form.email && !isEmail(form.email) && !emailAlreadyUsed && (
@@ -465,7 +488,7 @@ const ConsultationModal = ({ onClose }) => {
                       <label className="form-label" style={{ display:'block', marginBottom:8 }}>Approx. budget</label>
                       <div style={{ display:'flex', flexWrap:'wrap', gap:7 }}>
                         {BUDGET_SEGMENTS.map(b => (
-                          <Chip key={b.value} icon={b.icon} label={b.label}
+                          <Chip key={b.value} icon={b.icon} label={b.label} sub={b.sub}
                             selected={form.budgetSegment === b.value}
                             onClick={() => set({ budgetSegment:b.value })} />
                         ))}
